@@ -1,0 +1,97 @@
+body {
+    background-color: moccasin;
+}
+
+header{
+    text-align: center;
+    background-color: goldenrod;
+}
+
+h1 {
+    margin-bottom: 2em;
+    padding-bottom: .5em;
+    padding-top: .5em;
+}
+
+h2 {
+    text-align: center;
+    border-bottom: 2px solid red;
+    padding-bottom: .5em;
+    margin-bottom: 2em;
+}
+
+p#bio{
+    box-sizing: content-box;
+    width: 600px;
+    padding: 2em;
+    margin: 1em 2em;
+    border: 5px solid black;
+    font-size: x-large;
+    background-color: whitesmoke;
+    overflow: auto;
+}
+
+#container img{
+    flex: 0 0 400px;
+    margin-left: 2em;
+}
+
+#container {
+    justify-content: center;
+    display: flex;
+    height: 400px;
+}
+
+div.links {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 200px;
+    margin-bottom: 100px;
+}
+
+div.links a {
+    text-align: center;
+    width: 400px;
+    font-size: x-large;
+    padding: 1em;
+    border-left: 5px solid black;
+    border-right: 5px solid black;
+}
+
+div.links a.top {
+    border-top: 5px solid black;
+}
+
+div.links a.mid {
+    border: 5px solid black;
+}
+
+div.links a.bot {
+    border-bottom: 5px solid black;
+}
+
+a:link {
+    color: red;
+    background-color: whitesmoke;
+}
+
+a:visited {
+    color: darkgreen;
+    background-color: whitesmoke;
+}
+
+a:focus {
+    color: rgb(100, 0, 0);
+    background-color: goldenrod;
+}
+
+a:hover {
+    color: rgb(100, 0, 0);
+    background-color: goldenrod;
+}
+
+a:active {
+    color:navy;
+    background-color: goldenrod;
+}
