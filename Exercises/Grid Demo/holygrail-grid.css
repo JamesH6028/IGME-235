@@ -1,0 +1,97 @@
+/**************************************
+General Formatting (Leave This Alone!)
+**************************************/
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    /* sets base font size for rem sizing */
+    font-size: 16px;
+    font-family: Calibri, Helvetica, Arial, sans-serif;
+}
+
+html,
+body {
+    margin: 0;
+}
+
+header,
+footer {
+    /* centers header and footer content horizontally and vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #86af49;
+}
+
+nav,
+aside,
+article {
+    padding: .5rem;
+}
+
+article {
+    background-color: white;
+    overflow: auto;
+}
+
+nav, aside {
+    background-color: #b5e7a0;
+    border: 1px dotted black; 
+}
+
+/*****************
+Grid Formatting  
+*****************/
+
+#wrapper {
+    display: grid;
+    height: 95vh;
+    grid-template-rows: 1fr 2fr 10fr 2fr 1fr;
+    grid-template-areas: 
+        "header"
+        "sidenav"
+        "article"
+        "sidebar"
+        "footer"
+}
+
+@media only screen and (min-width: 760px) {
+    
+    body {
+        background-color: rgb(181, 181, 232);
+    }
+
+    #wrapper {
+        margin: 1rem auto;
+        grid-template-columns: 20% auto 20%;
+        grid-template-rows: 1fr 10fr 1fr;
+        max-width: 1000px;
+        grid-template-areas: 
+            "sidenav header  header"
+            "sidenav article sidebar"
+            "sidenav article footer";
+    }
+}
+
+header {
+    grid-area: header;
+}
+
+nav {
+    grid-area: sidenav;
+}
+
+article {
+    grid-area: article;
+}
+
+aside {
+    grid-area: sidebar;
+}
+
+footer {
+    grid-area: footer;
+}
