@@ -1,0 +1,88 @@
+* {
+    box-sizing: border-box;
+}
+
+#wrapper {
+    display: grid;
+    height: 95vh;
+    margin: 2em auto;
+    grid-template-columns: 45% 45%;
+    max-width: 1000px;
+    grid-template-rows: auto auto auto auto auto;
+    grid-template-areas: 
+    "header   header"
+    "picture1 article"
+    "caption  article"
+    "picture2 article"
+    "aside    picture3";
+}
+
+header {
+    grid-area: header;
+    max-width: 45%;
+    background-color: yellow;
+    border: solid black 1px;
+    text-align: center;
+}
+
+article {
+    grid-area: article;
+    margin-bottom: 2em;
+}
+
+.caption {
+    grid-area: caption;
+    padding: 1em;
+    justify-self: right;
+    display: flex;
+}
+
+.caption p{
+    margin: 1em 1em;
+    padding: 0em 1em;
+    border: 2px solid black;
+    font-size: .9em;
+}
+
+aside {
+    grid-area: aside;
+    background-color: pink;
+    border: 1px solid black;
+    margin-top: 1em;
+    margin-bottom: 5em;
+    margin-right: 1em;
+    font-weight: bold;
+    padding: 1em;
+}
+
+.pic1 {
+    grid-area: picture1;
+    justify-self: right;
+    margin-right: 2em;
+}
+
+.pic2 {
+    grid-area: picture2;
+    justify-self: right;
+    margin: 1em 0em;
+    margin-right: 2em;
+}
+
+.pic3 {
+    grid-area: picture3;
+    margin-top: 1em;
+    margin-bottom: 5em;
+}
+
+article h3 {
+    color: gray;
+    font-size: 2em;
+}
+
+article h2 {
+    font-size: 2.5em;
+}
+
+aside h2 {
+    text-align: center;
+}
