@@ -1,0 +1,143 @@
+.rubik-distressed-regular {
+    font-family: "Rubik Distressed", system-ui;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.permanent-marker-regular {
+    font-family: "Permanent Marker", cursive;
+    font-weight: 400;
+    font-style: normal;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+#wrapper {
+        display: grid;
+        height: 95vh;
+        margin: 2em auto;
+        grid-template-columns: 90%;
+        grid-template-rows: auto auto auto auto auto auto auto auto;
+        grid-template-areas:
+            "header"
+            "nav"
+            "article"
+            "picture1"
+            "caption "
+            "picture2"
+            "aside"
+            "picture3";
+        justify-items: center;
+    }
+
+@media only screen and (min-width: 760px) {
+    #wrapper {
+        display: grid;
+        height: 95vh;
+        margin: 2em auto;
+        grid-template-columns: 45% 45%;
+        max-width: 1000px;
+        grid-template-rows: auto auto auto auto auto;
+        grid-template-areas:
+            "header   nav"
+            "picture1 article"
+            "caption  article"
+            "picture2 article"
+            "aside    picture3";
+    }
+
+    #caption, #pic1, #pic2 {
+        display: flex;
+        justify-self: right;
+    }
+}
+
+header {
+    grid-area: header;
+    max-width: 90%;
+    background-color: yellow;
+    border: solid black 1px;
+    text-align: center;
+    padding: 1rem;
+}
+
+nav {
+    grid-area: nav;
+    max-width: 90%;
+    background-color: yellow;
+    border: solid black 1px;
+    text-align: center;
+    align-content: center;
+    margin-top: 2rem;
+    padding: 1.5rem;
+}
+
+nav a {
+    font-size: 1.25em;
+    margin: 0em 1em
+}
+
+article {
+    grid-area: article;
+    margin-bottom: 2em;
+}
+
+#caption {
+    grid-area: caption;
+    padding: 1em;
+    justify-self: center;
+    display: flex;
+}
+
+#caption p {
+    margin: 0em 1em;
+    padding: 0em 1em;
+    font-size: .9em;
+}
+
+aside {
+    grid-area: aside;
+    background-color: pink;
+    border: 1px solid black;
+    margin-top: 1em;
+    margin-bottom: 5em;
+    margin-right: 1em;
+    font-weight: bold;
+    padding: 1em;
+    height: 350px;
+    max-width: 95%;
+}
+
+#pic1 {
+    grid-area: picture1;
+    justify-self: center;
+    margin-right: 2em;
+}
+#pic2 {
+    grid-area: picture2;
+    justify-self: center;
+    margin: 1em 0em;
+    margin-right: 2em;
+}
+
+#pic3 {
+    grid-area: picture3;
+    margin-top: 1em;
+    margin-bottom: 5em;
+    max-width: 95%;
+}
+
+article h3 {
+    color: gray;
+    font-size: 2em;
+}
+
+article h2 {
+    font-size: 2.5em;
+}
+
+aside h2 {
+    text-align: center;
+}
