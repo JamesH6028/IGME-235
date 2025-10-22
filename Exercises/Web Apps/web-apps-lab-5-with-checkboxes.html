@@ -35,9 +35,9 @@
 
     <div id="colorform">
         <legend>Choose your favorite color!</legend>
-        <p><input type="radio" name="colorGroup" id="colorGroupRed" value="red" /> Red</p>
-        <p><input type="radio" name="colorGroup" id="colorGroupGreen" value="green" /> Green</p>
-        <p><input type="radio" name="colorGroup" id="colorGroupBlue" value="blue" /> Blue</p>
+        <p><input type="checkbox" name="colorGroup" id="colorGroupRed" value="red" /> Red</p>
+        <p><input type="checkbox" name="colorGroup" id="colorGroupGreen" value="green" /> Green</p>
+        <p><input type="checkbox" name="colorGroup" id="colorGroupBlue" value="blue" /> Blue</p>
         <p><button id="colorButton" type="button">Submit</button></p>
         <p id="info"></p>
     </div>
@@ -49,21 +49,46 @@
         let buttons = document.querySelectorAll('[name = "colorGroup"]');
 
         let getColor = (e) => { return e.target.value; };
-
-        let getSelected = (e) => {
-            info.innerHTML = "You have selected " + getColor(e) + "!";
-        }
-
-        let submit = (e) => {
-            let selectedColor = "";
+        let getChecked = (e) => {
+            let boxes = [];
             for (let i = 0; i < 3; i++) {
                 if (buttons[i].checked) {
-                    selectedColor = buttons[i].value;
+                    boxes.push(buttons[i].value);
                 }
             }
-            document.querySelector("legend").style.color = selectedColor;
-            info.innerHTML = "Your FINAL CHOICE is " + selectedColor + "!";
-        }
+            if (boxes.length == 1) {
+                return (boxes[0]);
+            }
+            else if (boxes.length == 2) {
+                return (boxes[0] + " and " + boxes[1]);
+            }
+            else if (boxes.length == 3) {
+                return (boxes[0] + ", " + boxes[1] + ", and " + boxes[2]);
+            }
+            else {
+                return null;
+            }
+        };
+
+        let getSelected = (e) => {
+            let phrase = getChecked();
+            if (phrase != null) {
+                info.innerHTML = "You have selected " + phrase + "!";
+            }
+            else {
+                info.innerHTML = "";
+            }
+        };
+
+        let submit = (e) => {
+            let phrase = getChecked();
+            if (phrase != null) {
+                info.innerHTML = "Your FINAL CHOICE is " + phrase + "!";
+            }
+            else {
+                info.innerHTML = "";
+            }
+        };
 
         buttons[0].onchange = getSelected;
         buttons[1].onchange = getSelected;
