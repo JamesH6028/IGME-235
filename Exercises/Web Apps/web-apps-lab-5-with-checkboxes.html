@@ -43,20 +43,33 @@
     </div>
 
     <script>
-        let info = document.querySelector("#info");
-        let currentColor = "";
+        "use strict";
         /* Write your code here! */
-        function setColor(color) {
-            if (currentColor != color){
-                currentColor = color;
-                info.innerHTML = "You have selected " + color;
-            }
-        }
-        let radios = document.querySelectorAll('input[name = "colorGroup"]');
-        for (const radio of radios){
-            radio.onchange = setColor(e.target.value);
+        let info = document.querySelector("#info");
+        let buttons = document.querySelectorAll('[name = "colorGroup"]');
+
+        let getColor = (e) => { return e.target.value; };
+
+        let getSelected = (e) => {
+            info.innerHTML = "You have selected " + getColor(e) + "!";
         }
 
+        let submit = (e) => {
+            let selectedColor = "";
+            for (let i = 0; i < 3; i++) {
+                if (buttons[i].checked) {
+                    selectedColor = buttons[i].value;
+                }
+            }
+            document.querySelector("legend").style.color = selectedColor;
+            info.innerHTML = "Your FINAL CHOICE is " + selectedColor + "!";
+        }
+
+        buttons[0].onchange = getSelected;
+        buttons[1].onchange = getSelected;
+        buttons[2].onchange = getSelected;
+
+        document.querySelector("#colorButton").onclick = submit;
     </script>
 </body>
 
