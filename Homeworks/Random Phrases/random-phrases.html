@@ -5,21 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cossette+Titre:wght@400;700&family=Quintessential&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
     <header>
-        <h1>Wise Words from Dr. House</h1>
+        <h1 class="quintessential-regular">Wise Words of Dr. House</h1>
     </header>
 
-    <p></p>
+    <div>
+        <p class="cossette-titre-bold"></p>
+    </div>
+
+    <button class="cossette-titre-bold">Generate Quote</button>
 
     <footer>
-        <h3>2025 James Horz</h3>
+        <h3 class="cossette-titre-bold">2025 James Horz</h3>
     </footer>
 </body>
 <script>
     let element = document.querySelector("p");
+    let button = document.querySelector("button");
     let phrases = ["You know what's a good business? Teeny tiny baby coffins.",
         "If her DNA was off by one percentage point she'd be a dolphin.",
         "Candy canes? Are you mocking me?",
@@ -27,10 +35,16 @@
         "Hey Wilson, I'm gonna cut some guy's eye out. Wanna come watch?"
     ];
 
-    function randomPhrase() {
+    function displayQuote() {
         let num = Math.floor(Math.random() * (Math.floor(phrases.length)));
-        console.log(num);
+        element.innerHTML = phrases[num];
     }
+
+    window.onload = function () {
+        displayQuote();
+    }
+
+    button.onclick = displayQuote;
 </script>
 
 </html>
