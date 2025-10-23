@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <h1>Wise Words from Dr. House</h1>
+    </header>
+
+    <p></p>
+
+    <footer>
+        <h3>2025 James Horz</h3>
+    </footer>
+</body>
+<script>
+    let element = document.querySelector("p");
+    let phrases = ["You know what's a good business? Teeny tiny baby coffins.",
+        "If her DNA was off by one percentage point she'd be a dolphin.",
+        "Candy canes? Are you mocking me?",
+        "It's not a what it's a who! Did you know they even have the right to vote?",
+        "Hey Wilson, I'm gonna cut some guy's eye out. Wanna come watch?"
+    ];
+
+    function randomPhrase() {
+        let num = Math.floor(Math.random() * (Math.floor(phrases.length)));
+        console.log(num);
+    }
+</script>
+
+</html>
