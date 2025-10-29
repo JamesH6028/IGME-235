@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Pixel Arteur</title>
+    <title>Conway's Game of Life</title>
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <script src="lifeworld.js"></script>
@@ -99,28 +99,28 @@
 
         let lastUpdate = performance.now();
         let lastFrame = performance.now();
-        let maxFrameDelay = 1000/12;
-        
-        lifeworld.init(numCols,numRows);
+        let maxFrameDelay = 1000 / 12;
+
+        lifeworld.init(numCols, numRows);
         loop(performance.now());
 
-        function loop(timestamp){
+        function loop(timestamp) {
             requestAnimationFrame(loop);
             lastUpdate = timestamp;
-            if (timestamp - lastFrame > maxFrameDelay){
+            if (timestamp - lastFrame > maxFrameDelay) {
                 lastFrame = timestamp;
                 lifeworld.step();
                 updateGrid();
             }
         }
 
-        function updateGrid(){
-            for (let row = 0; row < numRows; row++){
-                for (let col = 0; col < numCols; col++){
+        function updateGrid() {
+            for (let row = 0; row < numRows; row++) {
+                for (let col = 0; col < numCols; col++) {
                     let element = cells[row][col];
-                    if (lifeworld.world[row][col] == 1){
-                        element.style.backgroundColor = "red"
-                    }else{
+                    if (lifeworld.world[row][col] == 1) {
+                        element.style.backgroundColor = color;
+                    } else {
                         element.style.backgroundColor = "white";
                     }
                 }

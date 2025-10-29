@@ -32,33 +32,32 @@ const lifeworld = {
     },
 
     getLivingNeighbors(row, col) {
-        if ((row <= 0 || col <= 0) || (row < this.world.numRows || col < this.world.numCols)) {
+        if ((row <= 0 || col <= 0) || (row >= this.numRows - 1 || col >= this.numCols - 1)) {
             return 0;
-        } else {
-            let sum = 0;
-
-            if (this.world[row + 1][col] == 1) { sum++ };
-            if (this.world[row + 1][col + 1] == 1) { sum++ };
-            if (this.world[row][col + 1] == 1) { sum++ };
-            if (this.world[row - 1][col + 1] == 1) { sum++ };
-            if (this.world[row - 1][col] == 1) { sum++ };
-            if (this.world[row - 1][col - 1] == 1) { sum++ };
-            if (this.world[row][col - 1] == 1) { sum++ };
-            if (this.world[row + 1][col - 1] == 1) { sum++ };
-            return sum;
         }
+
+        let sum = 0;
+        if (this.world[row + 1][col] == 1) { sum++ };
+        if (this.world[row + 1][col + 1] == 1) { sum++ };
+        if (this.world[row][col + 1] == 1) { sum++ };
+        if (this.world[row - 1][col + 1] == 1) { sum++ };
+        if (this.world[row - 1][col] == 1) { sum++ };
+        if (this.world[row - 1][col - 1] == 1) { sum++ };
+        if (this.world[row][col - 1] == 1) { sum++ };
+        if (this.world[row + 1][col - 1] == 1) { sum++ };
+        return sum;
+
     },
 
     step() {
-        for (let row = 0; row < this.world.numRows; row++) {
-            for (let col = 0; col < this.world.numCols; col++) {
+        for (let row = 0; row < this.numRows; row++) {
+            for (let col = 0; col < this.numCols; col++) {
                 let liveNeighbors = this.getLivingNeighbors(row, col);
-                if ((liveNeighbors < 2) || (liveNeighbors > 3)) {
+                if (this.world[row][col] === 1 && (liveNeighbors < 2 || liveNeighbors > 3)) {
                     this.worldBuffer[row][col] = 0;
-                } else if ((liveNeighbors == 3) && (this.world[row][col] == 0)) {
+                } else if (this.world[row][col] === 0 && liveNeighbors === 3) {
                     this.worldBuffer[row][col] = 1;
-                }
-                else {
+                } else {
                     this.worldBuffer[row][col] = this.world[row][col];
                 }
             }
