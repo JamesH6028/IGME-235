@@ -1,0 +1,13 @@
+header {
+    text-align: center;
+}
+
+.widgets {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+#dropdowns {
+    display: flex;
+    flex-direction: row;
+}
