@@ -2,7 +2,16 @@ const PokeURL = "https://pokeapi.co/api/v2/"
 const Types = ["none", "normal", "fire", "water", "grass", "electric", "ice", "fighting", "poison",
     "ground", "flying", "psychic", "bug", "rock", "ghost", "dark", "dragon", "steel", "fairy"];
 let pokemon = "";
-let sprite;
+let type_1 = "any";
+let type_2 = "any";
+let generation = "any";
+let previous = "";
+let sprite, currentType;
+
+let typesArrays = [];
+for (let i = 0; i < 18; i++) {
+    typesArrays.push(null);
+}
 
 window.onload = (e) => {
     document.querySelector("#search").onclick = searchButtonClicked
@@ -13,64 +22,166 @@ window.onload = (e) => {
 function searchButtonClicked() {
     pokemon = document.querySelector("#pokemon").value;
     if (pokemon == "") {
-        let type1 = document.querySelector("#type1").value;
-        let type2 = document.querySelector("#type2").value;
-        let gen = document.querySelector("#gen").value;
-        pokemon = getRandomPokemon(type1, type2, gen);
+        type_1 = document.querySelector("#type1").value;
+        type_2 = document.querySelector("#type2").value;
+        generation = document.querySelector("#gen").value;
+        getRandomPokemon();
+        return;
     }
-    console.log(`${PokeURL}pokemon/${pokemon}/`);
-    getDataByName(`${PokeURL}pokemon/${pokemon}/`);
+    getPokemonData(`${PokeURL}pokemon/${pokemon}/`);
 }
 
-function getDataByName(url) {
+function getPokemonData(url) {
     let xhr = new XMLHttpRequest();
-    xhr.onload = dataLoadedByName;
+    xhr.onload = dataLoadedPokemon;
     xhr.onerror = dataError;
     xhr.open("GET", url);
     xhr.send();
 }
 
-function getDataByID(url) {
+function getSpeciesData(url) {
     let xhr = new XMLHttpRequest();
-    xhr.onload = dataLoadedByID;
+    xhr.onload = dataLoadedSpecies;
     xhr.onerror = dataError;
     xhr.open("GET", url);
     xhr.send();
 }
 
-function dataLoadedByName(e) {
+function getDataByGeneration(url) {
+    let xhr = new XMLHttpRequest();
+    xhr.onload = dataLoadedByGen;
+    xhr.onerror = dataError;
+    xhr.open("GET", url);
+    xhr.send();
+}
+
+function getDataByType(url) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.onload = dataLoadedByType;
+    xhr.onerror = dataError;
+    xhr.send();
+}
+
+function dataLoadedPokemon(e) {
     let xhr = e.target;
-
     let obj = JSON.parse(xhr.responseText);
-    let pokeID = obj.id;
+
     sprite.src = obj.sprites.front_default;
-    console.log(obj.id);
-    getDataByID(`${PokeURL}pokemon-species/${pokeID}/`)
 }
 
-function dataLoadedByID(e) {
+function dataLoadedSpecies(e) {
     let xhr = e.target;
     let obj = JSON.parse(xhr.responseText);
+
+    getPokemonData(obj.varieties[0].pokemon.url);
+}
+
+function dataLoadedByGen(e) {
+    let xhr = e.target;
+    let obj = JSON.parse(xhr.responseText);
+    let pokemonInGen = [];
+    let urls = [];
+    let viable = [];
+    for (let poke of obj.pokemon_species) {
+        pokemonInGen.push(poke.name);
+        urls.push(poke.url);
+    }
+
+    if (type_1 == "any" && type_2 == "any") {
+        let url = urls[getRandomInt(0, urls.length - 1)];
+        getSpeciesData(url);
+        return;
+    } else if (type_1 == "any" && type_2 != "none") {
+        let index = Types.indexOf(type_2) - 1;
+        for (let i = 0; i < pokemonInGen.length; i++) {
+            if (typesArrays[index].includes(pokemonInGen[i])) {
+                viable.push(urls[i]);
+            }
+        }
+    } else if (type_2 == "any") {
+        let index = Types.indexOf(type_1) - 1;
+        for (let i = 0; i < pokemonInGen.length; i++) {
+            if (typesArrays[index].includes(pokemonInGen[i])) {
+                viable.push(urls[i]);
+            }
+        }
+    } else if (type2 != "none") {
+        let index1 = Types.indexOf(type_1) - 1;
+        let index2 = Types.indexOf(type_2) - 1;
+        for (let i = 0; i < pokemonInGen.length; i++) {
+            if (typesArrays[index1].includes(pokemonInGen[i]) &&
+                typesArrays[index2].includes(pokemonInGen[i])) {
+                viable.push(urls[i]);
+            }
+        }
+    }
+
+    let url = "";
+    if (viable.length > 1) {
+        while (url == previous || url == "") {
+            url = viable[getRandomInt(0, viable.length - 1)];
+        }
+
+    } else { url = viable[0]; }
+    previous = url;
+    getSpeciesData(url);
+}
+
+function dataLoadedByType(e) {
+    let xhr = e.target;
+    let obj = JSON.parse(xhr.responseText);
+    let pokemonInType = [];
+    let duplicates = [];
+    for (let poke of obj.pokemon) {
+        let name = poke.pokemon.name;
+        if (name.includes('-') && (name != "porygon-z" && name != "mime-jr")) {
+            let pokeName = name.split('-')[0];
+            if (!duplicates.includes(pokeName)) {
+                duplicates.push(pokeName);
+                pokemonInType.push(pokeName);
+            }
+            continue;
+        }
+        pokemonInType.push(name);
+    }
+    typesArrays[currentType] = pokemonInType;
 }
 
 function dataError(e) {
     console.log("An error occurred");
 }
 
-function getRandomPokemon(type1, type2, gen) {
-    while ((type1 == "any") || (type1 == type2)) {
-        type1 = Types[getRandomInt(1, Types.length)];
+function getRandomPokemon() {
+    let numFetching = 0;
+
+    if (generation == "any") {
+        generation = getRandomInt(1, 9).toString();
     }
 
-    while ((type2 == "any") || (type1 == type2)) {
-        type2 = Types[getRandomInt(0, Types.length)];
+    if (type_1 != "any") {
+        let index = Types.indexOf(type_1) - 1;
+        if (typesArrays[index] == null) {
+            currentType = index;
+            numFetching++;
+            getDataByType(`${PokeURL}type/${type_1}/`);
+        }
     }
-    
-    if (gen == "any"){
 
+    if (type_2 != "any" && type_2 != "none") {
+        let index = Types.indexOf(type_2) - 1;
+        if (typesArrays[index] == null) {
+            currentType = index;
+            numFetching++;
+            getDataByType(`${PokeURL}type/${type_2}/`);
+        }
     }
-    else {gen = gen.parse;}
 
+    if (numFetching > 0) {
+        setTimeout(() => { getRandomPokemon(); }, 100 * numFetching);
+    } else {
+        getDataByGeneration(`${PokeURL}/generation/${generation}/`);
+    }
 }
 
 function getRandomInt(min, max) {
