@@ -28,7 +28,7 @@ function searchButtonClicked() {
         getRandomPokemon();
         return;
     }
-    getPokemonData(`${PokeURL}pokemon/${pokemon}/`);
+    getSpeciesData(`${PokeURL}pokemon-species/${pokemon}/`);
 }
 
 function getPokemonData(url) {
