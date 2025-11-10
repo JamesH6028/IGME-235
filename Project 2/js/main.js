@@ -3,7 +3,17 @@ const Types = ["none", "normal", "fire", "water", "grass", "electric", "ice", "f
     "ground", "flying", "psychic", "bug", "rock", "ghost", "dark", "dragon", "steel", "fairy"];
 const Gens = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 let unusedGens = Gens.slice();
-let pokemon = "";
+let pokemon = {
+    name: "",
+    type1: "",
+    type2: "",
+    gen: "",
+    number: "",
+    genderDiff: false,
+    forms: [],
+    sprites: [],
+    description: "",
+};
 let type_1 = "any";
 let type_2 = "any";
 let generation = "any";
@@ -24,16 +34,18 @@ window.onload = (e) => {
 
 
 function searchButtonClicked() {
+    resetPokemon();
     statusText.innerHTML = "Status: Searching...";
-    pokemon = document.querySelector("#pokemon").value;
-    if (pokemon == "") {
+    pokemon.name = document.querySelector("#pokemon").value;
+    if (pokemon.name == "") {
         type_1 = document.querySelector("#type1").value;
         type_2 = document.querySelector("#type2").value;
         generation = genSelector.value;
         getRandomPokemon();
         return;
     }
-    getSpeciesData(`${PokeURL}pokemon-species/${pokemon}/`);
+    getSpeciesData(`${PokeURL}pokemon-species/${pokemon.name}/`);
+    console.log(`${PokeURL}pokemon-species/${pokemon.name}/`);
 }
 
 function getPokemonData(url) {
@@ -72,17 +84,28 @@ function dataLoadedPokemon(e) {
     let xhr = e.target;
     let obj = JSON.parse(xhr.responseText);
 
-    sprite.src = obj.sprites.front_default;
+    pokemon.sprites.push(obj.sprites.front_default);
+    pokemon.sprites.push(obj.sprites.front_shiny);
+    if (pokemon.genderDiff) {
+        pokemon.sprites.push(obj.sprites.front_female);
+        pokemon.sprites.push(obj.sprites.front_shiny_female);
+    }
+    sprite.src = pokemon.sprites[0];
     statusText.innerHTML = "Status: Found!";
 }
 
 function dataLoadedSpecies(e) {
     let xhr = e.target;
     if (xhr.responseText == "Not Found") {
-        statusText.innerHTML = `Error: No Pokemon found with name "${pokemon}"`;
+        statusText.innerHTML = `Error: No Pokemon found with name "${pokemon.name}"`;
         return
     }
     let obj = JSON.parse(xhr.responseText);
+    pokemon.name = obj.name;
+    pokemon.number = obj.pokedex_numbers[0].entry_number;
+    pokemon.forms = obj.varieties.slice();
+    pokemon.genderDiff = obj.has_gender_difference;
+    pokemon.gen = obj.generation.url[obj.generation.url.length - 2];
     getPokemonData(obj.varieties[0].pokemon.url);
 }
 
@@ -99,6 +122,7 @@ function dataLoadedByGen(e) {
 
     if (type_1 == "any" && type_2 == "any") {
         getSpeciesData(urls[getRandomInt(0, urls.length - 1)]);
+        unusedGens = Gens.slice();
         return;
     }
 
@@ -224,4 +248,15 @@ function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function resetPokemon(){
+    pokemon.name = "";
+    pokemon.type1 = "";
+    pokemon.type2 = "";
+    pokemon.gen = "";
+    pokemon.number = "";
+    pokemon.genderDiff = false;
+    pokemon.forms = [];
+    pokemon.sprites = [];
 }
