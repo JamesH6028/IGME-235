@@ -1,12 +1,14 @@
 const PokeURL = "https://pokeapi.co/api/v2/"
 const Types = ["none", "normal", "fire", "water", "grass", "electric", "ice", "fighting", "poison",
     "ground", "flying", "psychic", "bug", "rock", "ghost", "dark", "dragon", "steel", "fairy"];
+const Gens = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+let unusedGens = Gens.slice();
 let pokemon = "";
 let type_1 = "any";
 let type_2 = "any";
 let generation = "any";
 let previous = "";
-let sprite, currentType;
+let sprite, currentType, statusText, genSelector;
 
 let typesArrays = [];
 for (let i = 0; i < 18; i++) {
@@ -16,15 +18,18 @@ for (let i = 0; i < 18; i++) {
 window.onload = (e) => {
     document.querySelector("#search").onclick = searchButtonClicked
     sprite = document.querySelector("#sprite");
+    statusText = document.querySelector("#status");
+    genSelector = document.querySelector("#gen");
 };
 
 
 function searchButtonClicked() {
+    statusText.innerHTML = "Status: Searching...";
     pokemon = document.querySelector("#pokemon").value;
     if (pokemon == "") {
         type_1 = document.querySelector("#type1").value;
         type_2 = document.querySelector("#type2").value;
-        generation = document.querySelector("#gen").value;
+        generation = genSelector.value;
         getRandomPokemon();
         return;
     }
@@ -68,12 +73,16 @@ function dataLoadedPokemon(e) {
     let obj = JSON.parse(xhr.responseText);
 
     sprite.src = obj.sprites.front_default;
+    statusText.innerHTML = "Status: Found!";
 }
 
 function dataLoadedSpecies(e) {
     let xhr = e.target;
+    if (xhr.responseText == "Not Found") {
+        statusText.innerHTML = `Error: No Pokemon found with name "${pokemon}"`;
+        return
+    }
     let obj = JSON.parse(xhr.responseText);
-
     getPokemonData(obj.varieties[0].pokemon.url);
 }
 
@@ -89,34 +98,59 @@ function dataLoadedByGen(e) {
     }
 
     if (type_1 == "any" && type_2 == "any") {
-        let url = urls[getRandomInt(0, urls.length - 1)];
-        getSpeciesData(url);
+        getSpeciesData(urls[getRandomInt(0, urls.length - 1)]);
         return;
-    } else if (type_1 == "any" && type_2 != "none") {
+    }
+
+    if (type_1 == "any") {
         let index = Types.indexOf(type_2) - 1;
         for (let i = 0; i < pokemonInGen.length; i++) {
             if (typesArrays[index].includes(pokemonInGen[i])) {
                 viable.push(urls[i]);
             }
         }
-    } else if (type_2 == "any") {
+        getRandomURL(viable);
+        return;
+    }
+
+    if (type_2 == "any") {
         let index = Types.indexOf(type_1) - 1;
         for (let i = 0; i < pokemonInGen.length; i++) {
             if (typesArrays[index].includes(pokemonInGen[i])) {
                 viable.push(urls[i]);
             }
         }
-    } else if (type2 != "none") {
+        getRandomURL(viable);
+        return;
+    }
+
+    if (type_1 != "any" && type_2 != "any") {
         let index1 = Types.indexOf(type_1) - 1;
         let index2 = Types.indexOf(type_2) - 1;
         for (let i = 0; i < pokemonInGen.length; i++) {
-            if (typesArrays[index1].includes(pokemonInGen[i]) &&
-                typesArrays[index2].includes(pokemonInGen[i])) {
+            if ((typesArrays[index1].includes(pokemonInGen[i])) && (typesArrays[index2].includes(pokemonInGen[i]))) {
                 viable.push(urls[i]);
             }
         }
+        getRandomURL(viable);
+        return;
+    }
+    console.log("failed break");
+}
+
+function getRandomURL(viable) {
+    if (viable.length == 0) {
+        if (genSelector.value == "any") {
+            getRandomPokemon();
+            return;
+        }
+        else {
+            statusText.innerHTML = "ERROR: No pokemon with selected attributes found!";
+            return;
+        }
     }
 
+    unusedGens = Gens.slice();
     let url = "";
     if (viable.length > 1) {
         while (url == previous || url == "") {
@@ -155,8 +189,10 @@ function dataError(e) {
 function getRandomPokemon() {
     let numFetching = 0;
 
-    if (generation == "any") {
-        generation = getRandomInt(1, 9).toString();
+    if (genSelector.value == "any") {
+        let index = getRandomInt(0, unusedGens.length - 1);
+        generation = unusedGens[index];
+        unusedGens.splice(index, 1);
     }
 
     if (type_1 != "any") {
