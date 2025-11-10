@@ -12,13 +12,14 @@ let pokemon = {
     genderDiff: false,
     forms: [],
     sprites: [],
-    description: "",
+    descriptions: [],
+    moves: []
 };
 let type_1 = "any";
 let type_2 = "any";
 let generation = "any";
 let previous = "";
-let sprite, currentType, statusText, genSelector;
+let sprite, currentType, statusText, genSelector, description, firstType, secondType, generationDisplay, nameDisplay, numDisplay;
 
 let typesArrays = [];
 for (let i = 0; i < 18; i++) {
@@ -45,7 +46,6 @@ function searchButtonClicked() {
         return;
     }
     getSpeciesData(`${PokeURL}pokemon-species/${pokemon.name}/`);
-    console.log(`${PokeURL}pokemon-species/${pokemon.name}/`);
 }
 
 function getPokemonData(url) {
@@ -106,6 +106,7 @@ function dataLoadedSpecies(e) {
     pokemon.forms = obj.varieties.slice();
     pokemon.genderDiff = obj.has_gender_difference;
     pokemon.gen = obj.generation.url[obj.generation.url.length - 2];
+    pokemon.descriptions = getEnglishDescriptions(obj.flavor_text_entries);
     getPokemonData(obj.varieties[0].pokemon.url);
 }
 
@@ -250,7 +251,7 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function resetPokemon(){
+function resetPokemon() {
     pokemon.name = "";
     pokemon.type1 = "";
     pokemon.type2 = "";
@@ -258,5 +259,20 @@ function resetPokemon(){
     pokemon.number = "";
     pokemon.genderDiff = false;
     pokemon.forms = [];
-    pokemon.sprites = [];
+    pokemon.sprites = []
+    pokemon.descriptions = [];
+    pokemon.moves = [];
+}
+
+function getEnglishDescriptions(all) {
+    let engDescriptions = [];
+    for (let desc of all) {
+        if (desc.language.name == "en") {
+            let text = desc.flavor_text;
+            text = text.replace(/\u000c/g, " ");
+            text = text.replace(/\n/g, " ");
+            engDescriptions.push(text);
+        }
+    }
+    return engDescriptions;
 }
