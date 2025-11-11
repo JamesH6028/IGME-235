@@ -19,11 +19,17 @@ let type_1 = "any";
 let type_2 = "any";
 let generation = "any";
 let previous = "";
-let sprite, currentType, statusText, genSelector, description, firstType, secondType, genDisplay, nameDisplay;
+let sprite, currentType, statusText, genSelector, description, firstType, secondType, genDisplay, nameDisplay, movesDiv;
 
 let typesArrays = [];
 for (let i = 0; i < 18; i++) {
     typesArrays.push(null);
+}
+
+let movesArrays = [];
+for (let i = 0; i < 18; i++) {
+    let blank = [];
+    typesArrays.push(blank);
 }
 
 window.onload = (e) => {
@@ -37,6 +43,7 @@ window.onload = (e) => {
     secondType = document.querySelector("#type_2");
     genDisplay = document.querySelector("#generation");
     nameDisplay = document.querySelector("#species");
+    movesDiv = document.querySelector("#moves");
 };
 
 
@@ -112,6 +119,14 @@ function dataLoadedPokemon(e) {
     if (obj.types.length > 1) {
         pokemon.type2 = obj.types[1].type.name;
     }
+    for (let move of obj.moves) {
+        let newMove = {
+            name: move.move.name,
+            url: move.move.url
+        };
+        //Object.seal(newMove);
+        pokemon.moves.push(newMove);
+    }
     displayContent();
     statusText.innerHTML = "Status: Found!";
 }
@@ -126,7 +141,7 @@ function dataLoadedSpecies(e) {
     pokemon.name = obj.name;
     pokemon.number = obj.pokedex_numbers[0].entry_number;
     pokemon.forms = obj.varieties.slice();
-    pokemon.genderDiff = obj.has_gender_difference;
+    pokemon.genderDiff = obj.has_gender_differences;
     pokemon.gen = obj.generation.url[obj.generation.url.length - 2];
     pokemon.descriptions = getEnglishDescriptions(obj.flavor_text_entries);
     let varIndex = 0;
@@ -209,6 +224,12 @@ function getRandomURL(viable) {
         }
 
     } else { url = viable[0]; }
+
+    if (url == previous) {
+        getRandomPokemon();
+        return;
+    }
+
     previous = url;
     getSpeciesData(url);
 }
@@ -288,30 +309,64 @@ function resetPokemon() {
     pokemon.sprites = []
     pokemon.descriptions = [];
     pokemon.moves = [];
+    while (movesDiv.firstChild) {
+        movesDiv.removeChild(movesDiv.firstChild);
+    }
 }
 
 function getEnglishDescriptions(all) {
     let engDescriptions = [];
     for (let desc of all) {
         if (desc.language.name == "en") {
-            let text = desc.flavor_text;
-            text = text.replace(/\u000c/g, " ");
-            text = text.replace(/\n/g, " ");
+            let text = fixSentence(desc.flavor_text);
             engDescriptions.push(text);
         }
     }
     return engDescriptions;
 }
 
+function fixSentence(string) {
+    string = string.replace(/\u000c/g, " ");
+    string = string.replace(/\n/g, " ");
+    return string;
+}
+
 function displayContent() {
-    sprite.src = pokemon.sprites[0];
     nameDisplay.innerHTML = `Species: ${capitalizeFirstLetter(pokemon.name)}, #${pokemon.number}`;
     genDisplay.innerHTML = `Generation: ${pokemon.gen}`;
     firstType.innerHTML = `Type 1: ${capitalizeFirstLetter(pokemon.type1)}`;
     secondType.innerHTML = `Type 2: ${capitalizeFirstLetter(pokemon.type2)}`;
     description.innerHTML = `"${pokemon.descriptions[0]}"`;
+    if (document.querySelector("#shiny").checked) {
+        sprite.src = pokemon.sprites[1];
+        return;
+    }
+    sprite.src = pokemon.sprites[0];
+
+    for (let i = 0; i < pokemon.moves.length; i++) {
+        let box = document.createElement("p");
+        box.className = "move";
+        box.innerHTML = fixMoveName(pokemon.moves[i].name);
+        movesDiv.appendChild(box);
+        if (i < pokemon.moves.length - 1) {
+            movesDiv.appendChild(document.createElement("hr"));
+        }
+    }
 }
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function fixMoveName(move) {
+    let temp = move.split("-");
+    let fixed = "";
+    for (let i = 0; i < temp.length; i++) {
+        fixed += capitalizeFirstLetter(temp[i]);
+        if (i < temp.length - 1) {
+            fixed += " "
+        }
+    }
+
+    return fixed;
 }

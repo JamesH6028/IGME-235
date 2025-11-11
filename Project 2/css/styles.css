@@ -11,3 +11,19 @@ header {
     display: flex;
     flex-direction: row;
 }
+
+#moves {
+    width: 400px;
+    height: 200px;
+    overflow: scroll;
+    border: 2px solid black;
+}
+
+.move {
+    text-align: center;
+}
+
+h2 {
+    width: 400px;
+    text-align: center;
+}
