@@ -19,7 +19,7 @@ let type_1 = "any";
 let type_2 = "any";
 let generation = "any";
 let previous = "";
-let sprite, currentType, statusText, genSelector, description, firstType, secondType, generationDisplay, nameDisplay, numDisplay;
+let sprite, currentType, statusText, genSelector, description, firstType, secondType, genDisplay, nameDisplay;
 
 let typesArrays = [];
 for (let i = 0; i < 18; i++) {
@@ -28,9 +28,15 @@ for (let i = 0; i < 18; i++) {
 
 window.onload = (e) => {
     document.querySelector("#search").onclick = searchButtonClicked
+    document.querySelector("#shiny").onchange = setShiny
     sprite = document.querySelector("#sprite");
     statusText = document.querySelector("#status");
     genSelector = document.querySelector("#gen");
+    description = document.querySelector("#dex");
+    firstType = document.querySelector("#type_1");
+    secondType = document.querySelector("#type_2");
+    genDisplay = document.querySelector("#generation");
+    nameDisplay = document.querySelector("#species");
 };
 
 
@@ -46,6 +52,17 @@ function searchButtonClicked() {
         return;
     }
     getSpeciesData(`${PokeURL}pokemon-species/${pokemon.name}/`);
+}
+
+function setShiny() {
+    if (pokemon.sprites.length == 0) {
+        return;
+    }
+    if (sprite.src == pokemon.sprites[0]) {
+        sprite.src = pokemon.sprites[1];
+        return;
+    }
+    sprite.src = pokemon.sprites[0];
 }
 
 function getPokemonData(url) {
@@ -90,7 +107,12 @@ function dataLoadedPokemon(e) {
         pokemon.sprites.push(obj.sprites.front_female);
         pokemon.sprites.push(obj.sprites.front_shiny_female);
     }
-    sprite.src = pokemon.sprites[0];
+    pokemon.type1 = obj.types[0].type.name;
+    pokemon.type2 = "None";
+    if (obj.types.length > 1) {
+        pokemon.type2 = obj.types[1].type.name;
+    }
+    displayContent();
     statusText.innerHTML = "Status: Found!";
 }
 
@@ -107,7 +129,11 @@ function dataLoadedSpecies(e) {
     pokemon.genderDiff = obj.has_gender_difference;
     pokemon.gen = obj.generation.url[obj.generation.url.length - 2];
     pokemon.descriptions = getEnglishDescriptions(obj.flavor_text_entries);
-    getPokemonData(obj.varieties[0].pokemon.url);
+    let varIndex = 0;
+    if (obj.varieties.length > 1 && (type_1 == "any" && type_2 == "any" && gen == "any")) {
+        varIndex = getRandomInt(0, obj.varieties.length);
+    }
+    getPokemonData(obj.varieties[varIndex].pokemon.url);
 }
 
 function dataLoadedByGen(e) {
@@ -275,4 +301,17 @@ function getEnglishDescriptions(all) {
         }
     }
     return engDescriptions;
+}
+
+function displayContent() {
+    sprite.src = pokemon.sprites[0];
+    nameDisplay.innerHTML = `Species: ${capitalizeFirstLetter(pokemon.name)}, #${pokemon.number}`;
+    genDisplay.innerHTML = `Generation: ${pokemon.gen}`;
+    firstType.innerHTML = `Type 1: ${capitalizeFirstLetter(pokemon.type1)}`;
+    secondType.innerHTML = `Type 2: ${capitalizeFirstLetter(pokemon.type2)}`;
+    description.innerHTML = `"${pokemon.descriptions[0]}"`;
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
