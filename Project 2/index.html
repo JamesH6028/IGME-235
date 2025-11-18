@@ -30,7 +30,7 @@
             <h2>Generate Random Pokemon</h2>
 
             <div id="dropdowns">
-                <div class="widgets">
+                <div class="widgets" class="dropdowns">
                     First Type - >
                     <select id="type1">
                         <option value="any" selected>Any</option>
@@ -55,7 +55,7 @@
                     </select>
                 </div>
 
-                <div class="widgets">
+                <div class="widgets" class="dropdowns">
                     Second Type - >
                     <select id="type2">
                         <option value="any" selected>Any</option>
@@ -80,7 +80,7 @@
                     </select>
                 </div>
 
-                <div class="widgets">
+                <div class="widgets" class="dropdowns">
                     Generation - >
                     <select id="gen">
                         <option value="any" selected>Any</option>
@@ -108,6 +108,22 @@
         <div id="content">
             <img id="sprite" alt="Pokemon Sprite">
             <p id="shinyBox"><input type="checkbox" id="shiny" value="red" /> Shiny?</p>
+            <div id="selectors">
+                <div class="widgets" class="dropdowns">
+                    Form:
+                    <select id="form">
+
+                    </select>
+                </div>
+
+                <div class="widgets" class="dropdowns">
+                    Gender:
+                    <select id="gender">
+                        <option value="0">Male</option>
+                        <option value="2">Female</option>
+                    </select>
+                </div>
+            </div>
             <div id="leftContent">
                 <p id="species">Species:</p>
                 <p id="generation">Generation: </p>

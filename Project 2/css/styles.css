@@ -41,6 +41,16 @@ header {
     margin-left: 1em;
 }
 
+#selectors {
+    margin-left: 1em;
+    display: flex;
+}
+
+#selectors div {
+    padding-right: 1em;
+}
+
+
 #shinyBox {
     margin-left: 1em;
 }

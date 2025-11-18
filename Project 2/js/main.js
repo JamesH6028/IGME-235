@@ -1,8 +1,12 @@
 const PokeURL = "https://pokeapi.co/api/v2/";
-const typeURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-vi/x-y/";
+const TypeURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-vi/x-y/";
 const Types = ["none", "normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost",
     "steel", "fire", "water", "grass", "electric", "psychic", "ice", "dragon", "dark", "fairy"];
 const Gens = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+const DashedPokemon = ["chi-yu", "chien-pao", "hakamo-o", "ho-oh", "jangmo-o", "kommo-o", "porygon-z", "ting-lu", "wo-chien", "type-null", "mr-mime",
+    "mime-jr", "tapu-koko", "tapu-lele", "tapu-bulu", "tapu-fini", "mr-rime", "great-tust", "scream-tail", "brute-bonnet", "flutter-mane", "slither-wing",
+    "sandy-shocks", "iron-treads", "iron-bundle", "iron-hands", "iron-jugulis", "iron-moth", "iron-thorns", "roaring-moon", "iron-valiant", "walking-wake",
+    "iron-leaves", "gouging-fire", "raging-bolt", "iron-boulder", "iron-crown", "nidoran-m", "nidoran-f"];
 let unusedGens = Gens.slice();
 let pokemon = {
     name: "",
@@ -20,7 +24,9 @@ let type_1 = "any";
 let type_2 = "any";
 let generation = "any";
 let previous = "";
-let sprite, currentType, statusText, genSelector, description, firstType, secondType, genDisplay, nameDisplay, movesDiv;
+let prevName = "";
+let sprite, currentType, statusText, genSelector, description, firstType, secondType, genDisplay, nameDisplay, movesDiv,
+    formSelector, genderSelector;
 
 let typesArrays = [];
 for (let i = 0; i < 18; i++) {
@@ -34,9 +40,6 @@ for (let i = 0; i < 18; i++) {
 }
 
 window.onload = (e) => {
-    document.querySelector("#search").onclick = searchButtonClicked
-    document.querySelector("#generate").onclick = generateButtonClicked
-    document.querySelector("#shiny").onchange = setShiny
     sprite = document.querySelector("#sprite");
     statusText = document.querySelector("#status");
     genSelector = document.querySelector("#gen");
@@ -46,12 +49,27 @@ window.onload = (e) => {
     genDisplay = document.querySelector("#generation");
     nameDisplay = document.querySelector("#species");
     movesDiv = document.querySelector("#moves");
+    formSelector = document.querySelector("#form");
+    genderSelector = document.querySelector("#gender");
 
-    getSpeciesData(`${PokeURL}pokemon-species/bulbasaur/`);
+    document.querySelector("#search").onclick = searchButtonClicked
+    document.querySelector("#generate").onclick = generateButtonClicked
+    document.querySelector("#shiny").onchange = setShiny
+    document.querySelector("#pokemon").addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.keyCode == 13) {
+            document.querySelector("#search").click();
+        }
+    });
+    formSelector.onchange = switchForm;
+    genderSelector.onchange = changeGender;
+
+    getSpeciesData(`${PokeURL}pokemon-species/pyroar/`);
 };
 
 
 function searchButtonClicked() {
+    prevName = pokemon.name;
     resetPokemon();
     statusText.innerHTML = "Status: Searching...";
     pokemon.name = document.querySelector("#pokemon").value;
@@ -63,6 +81,7 @@ function searchButtonClicked() {
 }
 
 function generateButtonClicked() {
+    prevName = pokemon.name;
     type_1 = document.querySelector("#type1").value;
     type_2 = document.querySelector("#type2").value;
     generation = genSelector.value;
@@ -74,11 +93,32 @@ function setShiny() {
     if (pokemon.sprites.length == 0) {
         return;
     }
-    if (sprite.src == pokemon.sprites[0]) {
-        sprite.src = pokemon.sprites[1];
+    let index = pokemon.sprites.indexOf(sprite.src);
+    if (index % 2 == 0) {
+        sprite.src = pokemon.sprites[index + 1];
         return;
     }
-    sprite.src = pokemon.sprites[0];
+    sprite.src = pokemon.sprites[index - 1];
+}
+
+function switchForm() {
+    prevName = pokemon.name;
+    let index = formSelector.value;
+    let url = pokemon.forms[index].pokemon.url;
+    pokemon.sprites = [];
+    getPokemonData(url);
+}
+
+function changeGender() {
+    if (!pokemon.genderDiff) {
+        return;
+    }
+
+    let index = genderSelector.value;
+    if (document.querySelector("#shiny").checked) {
+        index++;
+    }
+    sprite.src = pokemon.sprites[index];
 }
 
 function getPokemonData(url) {
@@ -249,7 +289,7 @@ function dataLoadedByType(e) {
     let duplicates = [];
     for (let poke of obj.pokemon) {
         let name = poke.pokemon.name;
-        if (name.includes('-') && (name != "porygon-z" && name != "mime-jr")) {
+        if (name.includes('-') && (!DashedPokemon.includes(name))) {
             let pokeName = name.split('-')[0];
             if (!duplicates.includes(pokeName)) {
                 duplicates.push(pokeName);
@@ -314,11 +354,14 @@ function resetPokemon() {
     pokemon.number = "";
     pokemon.genderDiff = false;
     pokemon.forms = [];
-    pokemon.sprites = []
+    pokemon.sprites = [];
     pokemon.descriptions = [];
     pokemon.moves = [];
     while (movesDiv.firstChild) {
         movesDiv.removeChild(movesDiv.firstChild);
+    }
+    while (formSelector.firstChild) {
+        formSelector.removeChild(formSelector.firstChild);
     }
 }
 
@@ -342,8 +385,11 @@ function fixSentence(string) {
 function displayContent() {
     nameDisplay.innerHTML = `Species: ${capitalizeFirstLetter(pokemon.name)}, #${pokemon.number}`;
     genDisplay.innerHTML = `Generation: ${pokemon.gen}`;
-    firstType.innerHTML = `Type 1: ${capitalizeFirstLetter(pokemon.type1)}`;
-    secondType.innerHTML = `Type 2: ${capitalizeFirstLetter(pokemon.type2)}`;
+    firstType.innerHTML = `Type 1: <img src="${TypeURL}${Types.indexOf(pokemon.type1)}.png" href="${pokemon.type1}">`;
+    secondType.innerHTML = `Type 2: None`;
+    if (pokemon.type2 != "None") {
+        secondType.innerHTML = `Type 2: <img src="${TypeURL}${Types.indexOf(pokemon.type2)}.png" href="${pokemon.type2}">`;
+    }
     description.innerHTML = `"${pokemon.descriptions[0]}"`;
 
     for (let i = 0; i < pokemon.moves.length; i++) {
@@ -353,6 +399,15 @@ function displayContent() {
         movesDiv.appendChild(box);
         if (i < pokemon.moves.length - 1) {
             movesDiv.appendChild(document.createElement("hr"));
+        }
+    }
+
+    if (prevName != pokemon.name) {
+        for (let i = 0; i < pokemon.forms.length; i++) {
+            let option = document.createElement("option");
+            option.value = i;
+            option.innerHTML = pokemon.forms[i].pokemon.name;
+            formSelector.appendChild(option);
         }
     }
 
