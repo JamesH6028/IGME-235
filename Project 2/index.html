@@ -10,65 +10,75 @@
 </head>
 
 <body>
-    <header>
-        <h1>Pokedex</h1>
-    </header>
+    <div id="wrapper">
+        <header>
+            <h1>Pokedex</h1>
+        </header>
 
-    <div class="widgets">
-        Search Term ->
-        <input id="pokemon" type="text" size="20" maxlength="12" autofocus value="" />
-    </div>
-    <p><em>Leave blank to generate random</em></p><br>
-    <p>Filters for <strong>random generation only</strong></p>
 
-    <div id="dropdowns">
-        <div class="widgets">
-            First Type - >
-            <select id="type1">
-                <option value="any" selected>Any</option>
-                <option value="normal">Normal</option>
-                <option value="fire">Fire</option>
-                <option value="water">Water</option>
-                <option value="grass">Grass</option>
-                <option value="electric">Electric</option>
-                <option value="ice">Ice</option>
-                <option value="fighting">Fighting</option>
-                <option value="poison">Poison</option>
-                <option value="ground">Ground</option>
-                <option value="flying">Flying</option>
-                <option value="psychic">Psychic</option>
-                <option value="bug">Bug</option>
-                <option value="rock">Rock</option>
-                <option value="ghost">Ghost</option>
-                <option value="dark">Dark</option>
-                <option value="dragon">Dragon</option>
-                <option value="steel">Steel</option>
-                <option value="fairy">Fairy</option>
-            </select>
-
+        <div id="searchWidgets">
+            <h2>Search By Pokemon Name</h2>
             <div class="widgets">
-                Second Type - >
-                <select id="type2">
-                    <option value="any" selected>Any</option>
-                    <option value="normal">Normal</option>
-                    <option value="fire">Fire</option>
-                    <option value="water">Water</option>
-                    <option value="grass">Grass</option>
-                    <option value="electric">Electric</option>
-                    <option value="ice">Ice</option>
-                    <option value="fighting">Fighting</option>
-                    <option value="poison">Poison</option>
-                    <option value="ground">Ground</option>
-                    <option value="flying">Flying</option>
-                    <option value="psychic">Psychic</option>
-                    <option value="bug">Bug</option>
-                    <option value="rock">Rock</option>
-                    <option value="ghost">Ghost</option>
-                    <option value="dark">Dark</option>
-                    <option value="dragon">Dragon</option>
-                    <option value="steel">Steel</option>
-                    <option value="fairy">Fairy</option>
-                </select>
+                Search Term ->
+                <input id="pokemon" type="text" size="20" maxlength="12" autofocus value="" />
+            </div>
+            <div class="widgets">
+                <button type="button" id="search" class="green">Find Pokemon</button>
+            </div>
+            <br><br>
+
+            <h2>Generate Random Pokemon</h2>
+
+            <div id="dropdowns">
+                <div class="widgets">
+                    First Type - >
+                    <select id="type1">
+                        <option value="any" selected>Any</option>
+                        <option value="normal">Normal</option>
+                        <option value="fire">Fire</option>
+                        <option value="water">Water</option>
+                        <option value="grass">Grass</option>
+                        <option value="electric">Electric</option>
+                        <option value="ice">Ice</option>
+                        <option value="fighting">Fighting</option>
+                        <option value="poison">Poison</option>
+                        <option value="ground">Ground</option>
+                        <option value="flying">Flying</option>
+                        <option value="psychic">Psychic</option>
+                        <option value="bug">Bug</option>
+                        <option value="rock">Rock</option>
+                        <option value="ghost">Ghost</option>
+                        <option value="dark">Dark</option>
+                        <option value="dragon">Dragon</option>
+                        <option value="steel">Steel</option>
+                        <option value="fairy">Fairy</option>
+                    </select>
+                </div>
+
+                <div class="widgets">
+                    Second Type - >
+                    <select id="type2">
+                        <option value="any" selected>Any</option>
+                        <option value="normal">Normal</option>
+                        <option value="fire">Fire</option>
+                        <option value="water">Water</option>
+                        <option value="grass">Grass</option>
+                        <option value="electric">Electric</option>
+                        <option value="ice">Ice</option>
+                        <option value="fighting">Fighting</option>
+                        <option value="poison">Poison</option>
+                        <option value="ground">Ground</option>
+                        <option value="flying">Flying</option>
+                        <option value="psychic">Psychic</option>
+                        <option value="bug">Bug</option>
+                        <option value="rock">Rock</option>
+                        <option value="ghost">Ghost</option>
+                        <option value="dark">Dark</option>
+                        <option value="dragon">Dragon</option>
+                        <option value="steel">Steel</option>
+                        <option value="fairy">Fairy</option>
+                    </select>
+                </div>
 
                 <div class="widgets">
                     Generation - >
@@ -85,26 +95,32 @@
                         <option value="9">IX</option>
                     </select>
                 </div>
+            </div>
 
-                <div class="widgets">
-                    <button type="button" id="search" class="green">Find Pokemon</button>
-                </div>
+            <div class="widgets">
+                <button type="button" id="generate">Generate Pokemon</button>
+            </div>
 
-                <p id="status">Status: Awaiting Search</p>
+            <br>
+            <h3 id="status">Status: Awaiting Search</h3>
+        </div>
 
-                <div id="content">
-                    <img id="sprite" alt="Pokemon Sprite">
-                    <p><input type="checkbox" id="shiny" value="red" /> Shiny?</p>
-                    <p id="species">Species:</p>
-                    <p id="generation">Generation: </p>
-                    <p id="type_1">Type 1:</p>
-                    <p id="type_2">Type 2:</p>
-                    <p id="dex"></p>
-                    <h2>Learnable Moves</h2>
-                    <div id="moves">
+        <div id="content">
+            <img id="sprite" alt="Pokemon Sprite">
+            <p id="shinyBox"><input type="checkbox" id="shiny" value="red" /> Shiny?</p>
+            <div id="leftContent">
+                <p id="species">Species:</p>
+                <p id="generation">Generation: </p>
+                <p id="type_1">Type 1:</p>
+                <p id="type_2">Type 2:</p>
+                <p id="dex"></p>
+            </div>
+            <h2>Learnable Moves</h2>
+            <div id="moves">
 
-                    </div>
-                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 

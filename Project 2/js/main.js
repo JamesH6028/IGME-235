@@ -1,6 +1,7 @@
-const PokeURL = "https://pokeapi.co/api/v2/"
-const Types = ["none", "normal", "fire", "water", "grass", "electric", "ice", "fighting", "poison",
-    "ground", "flying", "psychic", "bug", "rock", "ghost", "dark", "dragon", "steel", "fairy"];
+const PokeURL = "https://pokeapi.co/api/v2/";
+const typeURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-vi/x-y/";
+const Types = ["none", "normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost",
+    "steel", "fire", "water", "grass", "electric", "psychic", "ice", "dragon", "dark", "fairy"];
 const Gens = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 let unusedGens = Gens.slice();
 let pokemon = {
@@ -34,6 +35,7 @@ for (let i = 0; i < 18; i++) {
 
 window.onload = (e) => {
     document.querySelector("#search").onclick = searchButtonClicked
+    document.querySelector("#generate").onclick = generateButtonClicked
     document.querySelector("#shiny").onchange = setShiny
     sprite = document.querySelector("#sprite");
     statusText = document.querySelector("#status");
@@ -44,6 +46,8 @@ window.onload = (e) => {
     genDisplay = document.querySelector("#generation");
     nameDisplay = document.querySelector("#species");
     movesDiv = document.querySelector("#moves");
+
+    getSpeciesData(`${PokeURL}pokemon-species/bulbasaur/`);
 };
 
 
@@ -52,13 +56,18 @@ function searchButtonClicked() {
     statusText.innerHTML = "Status: Searching...";
     pokemon.name = document.querySelector("#pokemon").value;
     if (pokemon.name == "") {
-        type_1 = document.querySelector("#type1").value;
-        type_2 = document.querySelector("#type2").value;
-        generation = genSelector.value;
-        getRandomPokemon();
+        statusText.innerHTML = "Status: Error, enter a pokemon name to search"
         return;
     }
     getSpeciesData(`${PokeURL}pokemon-species/${pokemon.name}/`);
+}
+
+function generateButtonClicked() {
+    type_1 = document.querySelector("#type1").value;
+    type_2 = document.querySelector("#type2").value;
+    generation = genSelector.value;
+    resetPokemon();
+    getRandomPokemon();
 }
 
 function setShiny() {
@@ -124,7 +133,6 @@ function dataLoadedPokemon(e) {
             name: move.move.name,
             url: move.move.url
         };
-        //Object.seal(newMove);
         pokemon.moves.push(newMove);
     }
     displayContent();
@@ -337,11 +345,6 @@ function displayContent() {
     firstType.innerHTML = `Type 1: ${capitalizeFirstLetter(pokemon.type1)}`;
     secondType.innerHTML = `Type 2: ${capitalizeFirstLetter(pokemon.type2)}`;
     description.innerHTML = `"${pokemon.descriptions[0]}"`;
-    if (document.querySelector("#shiny").checked) {
-        sprite.src = pokemon.sprites[1];
-        return;
-    }
-    sprite.src = pokemon.sprites[0];
 
     for (let i = 0; i < pokemon.moves.length; i++) {
         let box = document.createElement("p");
@@ -352,6 +355,12 @@ function displayContent() {
             movesDiv.appendChild(document.createElement("hr"));
         }
     }
+
+    if (document.querySelector("#shiny").checked) {
+        sprite.src = pokemon.sprites[1];
+        return;
+    }
+    sprite.src = pokemon.sprites[0];
 }
 
 function capitalizeFirstLetter(string) {
