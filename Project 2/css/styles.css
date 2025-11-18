@@ -35,6 +35,7 @@ header {
     grid-area: content;
     background-color: rgb(70, 166, 255);
     border: 2px solid black;
+    border-radius: 50px;
 }
 
 #leftContent {
@@ -74,4 +75,5 @@ header {
     margin: 1em 0em 0em 1em;
     padding: .25em;
     border: 2px solid black;
+    border-radius: 25px;
 }

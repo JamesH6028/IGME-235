@@ -64,7 +64,7 @@ window.onload = (e) => {
     formSelector.onchange = switchForm;
     genderSelector.onchange = changeGender;
 
-    getSpeciesData(`${PokeURL}pokemon-species/pyroar/`);
+    getSpeciesData(`${PokeURL}pokemon-species/bulbasaur/`);
 };
 
 
@@ -416,6 +416,7 @@ function displayContent() {
         return;
     }
     sprite.src = pokemon.sprites[0];
+    changeGender();
 }
 
 function capitalizeFirstLetter(string) {
