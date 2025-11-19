@@ -29,7 +29,7 @@ let type_2 = "any";
 let generation = "any";
 let previous = "";
 let prevName = "";
-let sprite, currentType, statusText, genSelector, description, genDisplay, nameDisplay, movesDiv,
+let type1Selector, type2Selector,sprite, currentType, statusText, genSelector, description, genDisplay, nameDisplay, movesDiv,
     formSelector, genderSelector, typesDiv, numDisplay;
 
 let typesArrays = [];
@@ -44,6 +44,8 @@ for (let i = 0; i < 18; i++) {
 }
 
 window.onload = (e) => {
+    type1Selector = document.querySelector("#type1");
+    type2Selector = document.querySelector("#type2");
     sprite = document.querySelector("#sprite");
     statusText = document.querySelector("#status");
     genSelector = document.querySelector("#gen");
@@ -55,6 +57,15 @@ window.onload = (e) => {
     genderSelector = document.querySelector("#gender");
     typesDiv = document.querySelector("#types");
     numDisplay = document.querySelector("#number");
+
+    for (let i=1;i<19;i++){
+        let img = document.createElement("img");
+        img.src = TypeURL + i +".png";
+        img.alt = Types[i];
+        typesDiv.appendChild(img);
+    }
+
+    resetDiv(typesDiv);
 
     document.querySelector("#search").onclick = searchButtonClicked
     document.querySelector("#generate").onclick = generateButtonClicked
@@ -75,6 +86,10 @@ window.onload = (e) => {
 function searchButtonClicked() {
     prevName = pokemon.name;
     let term = fixSearchTerm(document.querySelector("#pokemon").value);
+    if (term == "") {
+        statusText.innerHTML = "Status: Error, enter a pokemon name to search"
+        return;
+    }
     if (term == prevName) {
         statusText.innerHTML = "Status: Already Found!!";
         return;
@@ -82,18 +97,14 @@ function searchButtonClicked() {
     resetPokemon();
     statusText.innerHTML = "Status: Searching...";
     pokemon.name = term;
-    if (pokemon.name == "") {
-        statusText.innerHTML = "Status: Error, enter a pokemon name to search"
-        return;
-    }
 
     getSpeciesData(`${PokeURL}pokemon-species/${pokemon.name}/`);
 }
 
 function generateButtonClicked() {
     prevName = pokemon.name;
-    type_1 = document.querySelector("#type1").value;
-    type_2 = document.querySelector("#type2").value;
+    type_1 = type1Selector.value;
+    type_2 = type2Selector.value;
     generation = genSelector.value;
     resetPokemon();
     getRandomPokemon();
@@ -116,6 +127,7 @@ function switchForm() {
     let index = formSelector.value;
     let url = pokemon.forms[index].pokemon.url;
     pokemon.sprites = [];
+    resetDiv(typesDiv);
     getPokemonData(url);
 }
 
@@ -367,11 +379,14 @@ function resetPokemon() {
     pokemon.sprites = [];
     pokemon.descriptions = [];
     pokemon.moves = [];
-    while (movesDiv.firstChild) {
-        movesDiv.removeChild(movesDiv.firstChild);
-    }
-    while (formSelector.firstChild) {
-        formSelector.removeChild(formSelector.firstChild);
+    resetDiv(movesDiv);
+    resetDiv(formSelector);
+    resetDiv(typesDiv);
+}
+
+function resetDiv(div){
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
     }
 }
 
@@ -429,13 +444,13 @@ function displayContent() {
 function displayTypes() {
     let img1 = document.createElement("img");
     img1.src = TypeURL + Types.indexOf(pokemon.type1) + ".png";
-    img1.href = pokemon.type1;
+    img1.alt = pokemon.type1;
     img1.height *= 1.5;
     typesDiv.appendChild(img1);
     if (pokemon.type2 != "None") {
         let img2 = document.createElement("img");
         img2.src = TypeURL + Types.indexOf(pokemon.type2) + ".png";
-        img2.href = pokemon.type2;
+        img2.alt = pokemon.type2;
         img2.height *= 1.5;
         typesDiv.appendChild(img2);
     }

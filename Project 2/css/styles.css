@@ -29,11 +29,20 @@ header {
 
 #searchWidgets {
     grid-area: search;
+}
+
+#inner {
+    width: 80%;
     margin: 0em 1rem;
     background-color: beige;
-    padding: 1em;
+    padding: 1em 0em;
     border: 2px solid black;
     border-radius: 25px;
+    justify-self: center;
+}
+
+#inner div, #inner h2, #inner h3{
+    text-align: center;
 }
 
 #content {
@@ -86,12 +95,16 @@ header {
 #info {
     display: flex;
     flex-direction: column;
-    border: 2px solid black;
+    justify-content: center;
+    margin: 0em 1rem;
+}
+
+#number {
+    font-size: 2em;
 }
 
 #species {
-    text-align: left;
-    font-size: 2em;
+    font-size: 3.5em;
 }
 
 #types {
