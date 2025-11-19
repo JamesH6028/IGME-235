@@ -11,6 +11,7 @@ const OnlyDashedPokemon = ["chi-yu", "chien-pao", "hakamo-o", "ho-oh", "jangmo-o
 const SpacedPokemon = ["type-null", "mr-mime", "mime-jr", "tapu-koko", "tapu-lele", "tapu-bulu", "tapu-fini", "mr-rime", "great-tust", "scream-tail",
     "brute-bonnet", "flutter-mane", "slither-wing", "sandy-shocks", "iron-treads", "iron-bundle", "iron-hands", "iron-jugulis", "iron-moth", "iron-thorns",
     "roaring-moon", "iron-valiant", "walking-wake", "iron-leaves", "gouging-fire", "raging-bolt", "iron-boulder", "iron-crown", "nidoran-m", "nidoran-f"];
+const Numerals = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
 let unusedGens = Gens.slice();
 let pokemon = {
     name: "",
@@ -22,6 +23,7 @@ let pokemon = {
     forms: [],
     sprites: [],
     descriptions: [],
+    nickname: "",
     moves: []
 };
 let type_1 = "any";
@@ -29,7 +31,7 @@ let type_2 = "any";
 let generation = "any";
 let previous = "";
 let prevName = "";
-let type1Selector, type2Selector,sprite, currentType, statusText, genSelector, description, genDisplay, nameDisplay, movesDiv,
+let type1Selector, type2Selector, sprite, currentType, statusText, genSelector, description, genDisplay, nameDisplay, movesDiv,
     formSelector, genderSelector, typesDiv, numDisplay;
 
 let typesArrays = [];
@@ -58,9 +60,9 @@ window.onload = (e) => {
     typesDiv = document.querySelector("#types");
     numDisplay = document.querySelector("#number");
 
-    for (let i=1;i<19;i++){
+    for (let i = 1; i < 19; i++) {
         let img = document.createElement("img");
-        img.src = TypeURL + i +".png";
+        img.src = TypeURL + i + ".png";
         img.alt = Types[i];
         typesDiv.appendChild(img);
     }
@@ -214,6 +216,8 @@ function dataLoadedSpecies(e) {
     pokemon.genderDiff = obj.has_gender_differences;
     pokemon.gen = obj.generation.url[obj.generation.url.length - 2];
     pokemon.descriptions = getEnglishDescriptions(obj.flavor_text_entries);
+    pokemon.nickname = "The " + getEnglishNickname(obj.genera);
+    console.log(pokemon.nickname);
     let varIndex = 0;
     if (obj.varieties.length > 1 && (type_1 == "any" && type_2 == "any" && gen == "any")) {
         varIndex = getRandomInt(0, obj.varieties.length);
@@ -384,7 +388,7 @@ function resetPokemon() {
     resetDiv(typesDiv);
 }
 
-function resetDiv(div){
+function resetDiv(div) {
     while (div.firstChild) {
         div.removeChild(div.firstChild);
     }
@@ -401,6 +405,14 @@ function getEnglishDescriptions(all) {
     return engDescriptions;
 }
 
+function getEnglishNickname(all) {
+    for (let name of all) {
+        if (name.language.name == "en") {
+            return(name.genus);
+        }
+    }
+}
+
 function fixSentence(string) {
     string = string.replace(/\u000c/g, " ");
     string = string.replace(/\n/g, " ");
@@ -411,7 +423,7 @@ function displayContent() {
     displayTypes();
     nameDisplay.innerHTML = fixPokemonName(pokemon.name);
     numDisplay.innerHTML = `Pokemon #${pokemon.number}`
-    genDisplay.innerHTML = `Generation: ${pokemon.gen}`;
+    genDisplay.innerHTML = `Generation ${Numerals[pokemon.gen]}`;
     description.innerHTML = `"${pokemon.descriptions[0]}"`;
 
     for (let i = 0; i < pokemon.moves.length; i++) {
