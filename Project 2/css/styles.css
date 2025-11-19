@@ -91,15 +91,22 @@ header {
     text-align: center;
 }
 
-#info {
+.info {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: 0em 1rem;
+    margin: 0em 1rem 0rem 0.5rem;
+    padding-right: 1rem;
+    border-right: 2px solid black;
 }
 
-#number, #generation {
+#number, #generation, #nickname {
     font-size: 2em;
+}
+
+#typeText {
+    text-align: center;
+    font-size: 1.5em;
 }
 
 #species {
@@ -141,4 +148,5 @@ header {
 
 .move {
     text-align: center;
+    /*height: 100px;*/
 }

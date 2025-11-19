@@ -12,6 +12,7 @@ const SpacedPokemon = ["type-null", "mr-mime", "mime-jr", "tapu-koko", "tapu-lel
     "brute-bonnet", "flutter-mane", "slither-wing", "sandy-shocks", "iron-treads", "iron-bundle", "iron-hands", "iron-jugulis", "iron-moth", "iron-thorns",
     "roaring-moon", "iron-valiant", "walking-wake", "iron-leaves", "gouging-fire", "raging-bolt", "iron-boulder", "iron-crown", "nidoran-m", "nidoran-f"];
 const Numerals = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+let typeImgs = [];
 let unusedGens = Gens.slice();
 let pokemon = {
     name: "",
@@ -32,7 +33,7 @@ let generation = "any";
 let previous = "";
 let prevName = "";
 let type1Selector, type2Selector, sprite, currentType, statusText, genSelector, description, genDisplay, nameDisplay, movesDiv,
-    formSelector, genderSelector, typesDiv, numDisplay;
+    formSelector, genderSelector, typesDiv, numDisplay, nicknameDisplay, typeText;
 
 let typesArrays = [];
 for (let i = 0; i < 18; i++) {
@@ -59,15 +60,16 @@ window.onload = (e) => {
     genderSelector = document.querySelector("#gender");
     typesDiv = document.querySelector("#types");
     numDisplay = document.querySelector("#number");
+    nicknameDisplay = document.querySelector("#nickname");
+    typeText = document.querySelector("#typeText");
 
     for (let i = 1; i < 19; i++) {
         let img = document.createElement("img");
-        img.src = TypeURL + i + ".png";
+        img.src = "../images/" + Types[i] + ".png";
         img.alt = Types[i];
-        typesDiv.appendChild(img);
+        img.height *= 1.5;
+        typeImgs.push(img);
     }
-
-    resetDiv(typesDiv);
 
     document.querySelector("#search").onclick = searchButtonClicked
     document.querySelector("#generate").onclick = generateButtonClicked
@@ -83,7 +85,6 @@ window.onload = (e) => {
 
     getSpeciesData(`${PokeURL}pokemon-species/bulbasaur/`);
 };
-
 
 function searchButtonClicked() {
     prevName = pokemon.name;
@@ -177,6 +178,14 @@ function getDataByType(url) {
     xhr.send();
 }
 
+function getDataByMove(url) {
+    let xhr = new XMLHttpRequest();
+    xhr.onload = dataLoadedByMove;
+    xhr.onerror = dataError;
+    xhr.open("GET", url);
+    xhr.send();
+}
+
 function dataLoadedPokemon(e) {
     let xhr = e.target;
     let obj = JSON.parse(xhr.responseText);
@@ -193,13 +202,9 @@ function dataLoadedPokemon(e) {
         pokemon.type2 = obj.types[1].type.name;
     }
     for (let move of obj.moves) {
-        let newMove = {
-            name: move.move.name,
-            url: move.move.url
-        };
-        pokemon.moves.push(newMove);
+        getDataByMove(move.move.url);
     }
-    displayContent();
+    setTimeout(() => { displayContent(); }, 100);
     statusText.innerHTML = "Status: Found!";
 }
 
@@ -217,12 +222,28 @@ function dataLoadedSpecies(e) {
     pokemon.gen = obj.generation.url[obj.generation.url.length - 2];
     pokemon.descriptions = getEnglishDescriptions(obj.flavor_text_entries);
     pokemon.nickname = "The " + getEnglishNickname(obj.genera);
-    console.log(pokemon.nickname);
     let varIndex = 0;
     if (obj.varieties.length > 1 && (type_1 == "any" && type_2 == "any" && gen == "any")) {
         varIndex = getRandomInt(0, obj.varieties.length);
     }
     getPokemonData(obj.varieties[varIndex].pokemon.url);
+}
+
+function dataLoadedByMove(e) {
+    let xhr = e.target;
+    let obj = JSON.parse(xhr.responseText);
+
+    let descriptions = getEnglishDescriptions(obj.flavor_text_entries);
+    let newMove = {
+        name: obj.name,
+        description: descriptions[descriptions.length - 1],
+        type: obj.type.name,
+        class: obj.damage_class.name,
+        pp: obj.pp,
+        accuracy: obj.accuracy,
+        power: obj.power
+    };
+    pokemon.moves.push(newMove);
 }
 
 function dataLoadedByGen(e) {
@@ -237,8 +258,7 @@ function dataLoadedByGen(e) {
     }
 
     if (type_1 == "any" && type_2 == "any") {
-        getSpeciesData(urls[getRandomInt(0, urls.length - 1)]);
-        unusedGens = Gens.slice();
+        getRandomURL(urls);
         return;
     }
 
@@ -360,7 +380,7 @@ function getRandomPokemon() {
     }
 
     if (numFetching > 0) {
-        setTimeout(() => { getRandomPokemon(); }, 100 * numFetching);
+        setTimeout(() => { getRandomPokemon(); }, 120 * numFetching);
     } else {
         getDataByGeneration(`${PokeURL}/generation/${generation}/`);
     }
@@ -408,7 +428,7 @@ function getEnglishDescriptions(all) {
 function getEnglishNickname(all) {
     for (let name of all) {
         if (name.language.name == "en") {
-            return(name.genus);
+            return (name.genus);
         }
     }
 }
@@ -422,19 +442,11 @@ function fixSentence(string) {
 function displayContent() {
     displayTypes();
     nameDisplay.innerHTML = fixPokemonName(pokemon.name);
-    numDisplay.innerHTML = `Pokemon #${pokemon.number}`
+    numDisplay.innerHTML = `Pokédex #${pokemon.number}`
     genDisplay.innerHTML = `Generation ${Numerals[pokemon.gen]}`;
+    nicknameDisplay.innerHTML = pokemon.nickname;
     description.innerHTML = `"${pokemon.descriptions[0]}"`;
-
-    for (let i = 0; i < pokemon.moves.length; i++) {
-        let box = document.createElement("p");
-        box.className = "move";
-        box.innerHTML = fixMoveName(pokemon.moves[i].name);
-        movesDiv.appendChild(box);
-        if (i < pokemon.moves.length - 1) {
-            movesDiv.appendChild(document.createElement("hr"));
-        }
-    }
+    displayMoves();
 
     if (prevName != pokemon.name) {
         for (let i = 0; i < pokemon.forms.length; i++) {
@@ -453,18 +465,59 @@ function displayContent() {
     changeGender();
 }
 
+function displayMoves() {
+    //movesDiv.appendChild(document.createElement("hr"))
+    for (let i = 0; i < pokemon.moves.length; i++) {
+        let box = document.createElement("div");
+        box.className = "move";
+        let nameBox = document.createElement("div");
+        nameBox.innerHTML = fixMoveName(pokemon.moves[i].name);
+        nameBox.class = "moveName";
+        box.appendChild(nameBox);
+        let descBox = document.createElement("div");
+        descBox.innerHTML = pokemon.moves[i].description;
+        descBox.class = "moveDesc";
+        box.appendChild(descBox);
+        let catBox = document.createElement("div");
+        catBox.innerHTML = "Category: " + capitalizeFirstLetter(pokemon.moves[i].class);
+        catBox.class = "moveClass";
+        box.appendChild(catBox);
+        let typeBox = document.createElement("div");
+        typeBox.innerHTML = "Type: " + pokemon.moves[i].type;
+        typeBox.class = "moveType";
+        box.appendChild(typeBox);
+        let powBox = document.createElement("div");
+        if (pokemon.moves[i].power == null){
+            pokemon.moves[i].power = "-";
+        }
+        powBox.innerHTML = "Power: " + pokemon.moves[i].power;
+        powBox.class = "movePower";
+        box.appendChild(powBox);
+        let accBox = document.createElement("div");
+        if (pokemon.moves[i].accuracy == null){
+            pokemon.moves[i].accuracy = "-";
+        }
+        accBox.innerHTML = "Accuracy: " + pokemon.moves[i].accuracy;
+        accBox.class = "moveDesc";
+        box.appendChild(accBox);
+        let ppBox = document.createElement("div");
+        ppBox.innerHTML = "PP: " + pokemon.moves[i].pp;
+        ppBox.class = "movePP";
+        box.appendChild(ppBox);
+        movesDiv.appendChild(box);
+        if (i < pokemon.moves.length - 1) {
+            movesDiv.appendChild(document.createElement("hr"));
+        }
+    }
+}
+
 function displayTypes() {
-    let img1 = document.createElement("img");
-    img1.src = TypeURL + Types.indexOf(pokemon.type1) + ".png";
-    img1.alt = pokemon.type1;
-    img1.height *= 1.5;
-    typesDiv.appendChild(img1);
+    typesDiv.appendChild(typeText);
+    typeText.innerHTML = "Type";
+    typesDiv.appendChild(typeImgs[Types.indexOf(pokemon.type1) - 1]);
     if (pokemon.type2 != "None") {
-        let img2 = document.createElement("img");
-        img2.src = TypeURL + Types.indexOf(pokemon.type2) + ".png";
-        img2.alt = pokemon.type2;
-        img2.height *= 1.5;
-        typesDiv.appendChild(img2);
+        typesDiv.appendChild(typeImgs[Types.indexOf(pokemon.type2) - 1]);
+        typeText.innerHTML = "Types";
     }
 }
 
@@ -510,6 +563,20 @@ function fixPokemonName(string) {
     name = name.trim();
     if (OnlyDashedPokemon.includes(string)) {
         name = name.replace(" ", "-");
+    }
+
+    if (string.includes("alola")){
+        name = name.replace(" Alola", "");
+        name = "Alolan " + name;
+    } else if (string.includes("galar")){
+        name = name.replace(" Galar", "");
+        name = "Galarian " + name;
+    } else if (string.includes("hisui")){
+        name = name.replace(" Hisui", "");
+        name = "Hisuian " + name;
+    } else if (string.includes("paldea")){
+        name = name.replace(" Paldea", "");
+        name = "Paldean " + name;
     }
 
     return (name);

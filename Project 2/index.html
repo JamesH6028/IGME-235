@@ -12,23 +12,23 @@
 <body>
     <div id="wrapper">
         <header>
-            <h1>Pokedex</h1>
+            <h1>Pokédex</h1>
         </header>
 
 
         <div id="searchWidgets">
             <div id="inner">
-                <h2>Search By Pokemon Name</h2>
+                <h2>Search By Pokémon Name</h2>
                 <div class="widgets">
                     Search Term ->
                     <input id="pokemon" type="text" size="20" maxlength="12" autofocus value="" />
                 </div>
                 <div class="widgets">
-                    <button type="button" id="search" class="green">Find Pokemon</button>
+                    <button type="button" id="search" class="green">Find Pokémon</button>
                 </div>
                 <br><br>
 
-                <h2>Generate Random Pokemon</h2>
+                <h2>Generate Random Pokémon</h2>
 
                 <div id="dropdowns">
                     <div class="widgets" class="dropdowns">
@@ -100,7 +100,7 @@
                 </div>
 
                 <div class="widgets">
-                    <button type="button" id="generate">Generate Pokemon</button>
+                    <button type="button" id="generate">Generate Pokémon</button>
                 </div>
 
                 <br>
@@ -109,16 +109,20 @@
         </div>
 
         <div id="content">
-            <img id="sprite" alt="Pokemon Sprite">
+            <img id="sprite" alt="Pokémon Sprite">
             <div id="topContent">
-                <div id="info">
-                    <div id="number">Pokemon #</div>
+                <div class="info">
                     <div id="species">Species: </div>
+                    <div id="nickname"></div>
+                </div>
+                <div class="info">
+                    <div id="number">#</div>
+                    <div id="generation">Generation </div>
                 </div>
                 <div id="types">
+                    <div id="typeText">Type</div>
 
                 </div>
-                <p id="generation">Generation </p>
             </div>
             <div id="leftContent">
                 <p id="shinyBox"><input type="checkbox" id="shiny" value="red" /> Shiny?</p>
