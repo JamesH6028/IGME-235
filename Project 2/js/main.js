@@ -7,6 +7,10 @@ const DashedPokemon = ["chi-yu", "chien-pao", "hakamo-o", "ho-oh", "jangmo-o", "
     "mime-jr", "tapu-koko", "tapu-lele", "tapu-bulu", "tapu-fini", "mr-rime", "great-tust", "scream-tail", "brute-bonnet", "flutter-mane", "slither-wing",
     "sandy-shocks", "iron-treads", "iron-bundle", "iron-hands", "iron-jugulis", "iron-moth", "iron-thorns", "roaring-moon", "iron-valiant", "walking-wake",
     "iron-leaves", "gouging-fire", "raging-bolt", "iron-boulder", "iron-crown", "nidoran-m", "nidoran-f"];
+const OnlyDashedPokemon = ["chi-yu", "chien-pao", "hakamo-o", "ho-oh", "jangmo-o", "kommo-o", "porygon-z", "ting-lu", "wo-chien",];
+const SpacedPokemon = ["type-null", "mr-mime", "mime-jr", "tapu-koko", "tapu-lele", "tapu-bulu", "tapu-fini", "mr-rime", "great-tust", "scream-tail",
+    "brute-bonnet", "flutter-mane", "slither-wing", "sandy-shocks", "iron-treads", "iron-bundle", "iron-hands", "iron-jugulis", "iron-moth", "iron-thorns",
+    "roaring-moon", "iron-valiant", "walking-wake", "iron-leaves", "gouging-fire", "raging-bolt", "iron-boulder", "iron-crown", "nidoran-m", "nidoran-f"];
 let unusedGens = Gens.slice();
 let pokemon = {
     name: "",
@@ -25,8 +29,8 @@ let type_2 = "any";
 let generation = "any";
 let previous = "";
 let prevName = "";
-let sprite, currentType, statusText, genSelector, description, firstType, secondType, genDisplay, nameDisplay, movesDiv,
-    formSelector, genderSelector;
+let sprite, currentType, statusText, genSelector, description, genDisplay, nameDisplay, movesDiv,
+    formSelector, genderSelector, typesDiv, numDisplay;
 
 let typesArrays = [];
 for (let i = 0; i < 18; i++) {
@@ -44,13 +48,13 @@ window.onload = (e) => {
     statusText = document.querySelector("#status");
     genSelector = document.querySelector("#gen");
     description = document.querySelector("#dex");
-    firstType = document.querySelector("#type_1");
-    secondType = document.querySelector("#type_2");
     genDisplay = document.querySelector("#generation");
     nameDisplay = document.querySelector("#species");
     movesDiv = document.querySelector("#moves");
     formSelector = document.querySelector("#form");
     genderSelector = document.querySelector("#gender");
+    typesDiv = document.querySelector("#types");
+    numDisplay = document.querySelector("#number");
 
     document.querySelector("#search").onclick = searchButtonClicked
     document.querySelector("#generate").onclick = generateButtonClicked
@@ -70,13 +74,19 @@ window.onload = (e) => {
 
 function searchButtonClicked() {
     prevName = pokemon.name;
+    let term = fixSearchTerm(document.querySelector("#pokemon").value);
+    if (term == prevName) {
+        statusText.innerHTML = "Status: Already Found!!";
+        return;
+    }
     resetPokemon();
     statusText.innerHTML = "Status: Searching...";
-    pokemon.name = document.querySelector("#pokemon").value;
+    pokemon.name = term;
     if (pokemon.name == "") {
         statusText.innerHTML = "Status: Error, enter a pokemon name to search"
         return;
     }
+
     getSpeciesData(`${PokeURL}pokemon-species/${pokemon.name}/`);
 }
 
@@ -383,13 +393,10 @@ function fixSentence(string) {
 }
 
 function displayContent() {
-    nameDisplay.innerHTML = `Species: ${capitalizeFirstLetter(pokemon.name)}, #${pokemon.number}`;
+    displayTypes();
+    nameDisplay.innerHTML = fixPokemonName(pokemon.name);
+    numDisplay.innerHTML = `Pokemon #${pokemon.number}`
     genDisplay.innerHTML = `Generation: ${pokemon.gen}`;
-    firstType.innerHTML = `Type 1: <img src="${TypeURL}${Types.indexOf(pokemon.type1)}.png" href="${pokemon.type1}">`;
-    secondType.innerHTML = `Type 2: None`;
-    if (pokemon.type2 != "None") {
-        secondType.innerHTML = `Type 2: <img src="${TypeURL}${Types.indexOf(pokemon.type2)}.png" href="${pokemon.type2}">`;
-    }
     description.innerHTML = `"${pokemon.descriptions[0]}"`;
 
     for (let i = 0; i < pokemon.moves.length; i++) {
@@ -406,7 +413,7 @@ function displayContent() {
         for (let i = 0; i < pokemon.forms.length; i++) {
             let option = document.createElement("option");
             option.value = i;
-            option.innerHTML = pokemon.forms[i].pokemon.name;
+            option.innerHTML = fixPokemonName(pokemon.forms[i].pokemon.name);
             formSelector.appendChild(option);
         }
     }
@@ -417,6 +424,21 @@ function displayContent() {
     }
     sprite.src = pokemon.sprites[0];
     changeGender();
+}
+
+function displayTypes() {
+    let img1 = document.createElement("img");
+    img1.src = TypeURL + Types.indexOf(pokemon.type1) + ".png";
+    img1.href = pokemon.type1;
+    img1.height *= 1.5;
+    typesDiv.appendChild(img1);
+    if (pokemon.type2 != "None") {
+        let img2 = document.createElement("img");
+        img2.src = TypeURL + Types.indexOf(pokemon.type2) + ".png";
+        img2.href = pokemon.type2;
+        img2.height *= 1.5;
+        typesDiv.appendChild(img2);
+    }
 }
 
 function capitalizeFirstLetter(string) {
@@ -434,4 +456,34 @@ function fixMoveName(move) {
     }
 
     return fixed;
+}
+
+function fixSearchTerm(term) {
+    term = term.trim();
+    term = term.toLowerCase();
+    term = term.replace(".", "");
+    term = term.replace(" ", "-");
+    return term;
+}
+
+function fixPokemonName(string) {
+    let arr = string.split("-");
+    if (string == "mr-mime" || string == "mr-rime") {
+        return ("Mr. " + capitalizeFirstLetter(arr[1]));
+    }
+
+    if (string == "mr-mime-galar") {
+        return ("Mr. Mime Galar");
+    }
+
+    let name = "";
+    for (let sub of arr) {
+        name += capitalizeFirstLetter(sub) + " ";
+    }
+    name = name.trim();
+    if (OnlyDashedPokemon.includes(string)) {
+        name = name.replace(" ", "-");
+    }
+
+    return (name);
 }

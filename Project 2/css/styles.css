@@ -7,7 +7,7 @@ body {
     margin-bottom: 1em;
 }
 
-#content h2 {
+#focus h2 {
     width: 400px;
     text-align: center;
 }
@@ -16,7 +16,7 @@ body {
     display: grid;
     height: 95vh;
     grid-template-columns: 25% 75%;
-    grid-template-rows: auto auto;
+    grid-template-rows: 10vh auto;
     grid-template-areas:
         "header header"
         "search content";
@@ -29,6 +29,11 @@ header {
 
 #searchWidgets {
     grid-area: search;
+    margin: 0em 1rem;
+    background-color: beige;
+    padding: 1em;
+    border: 2px solid black;
+    border-radius: 25px;
 }
 
 #content {
@@ -36,10 +41,68 @@ header {
     background-color: rgb(70, 166, 255);
     border: 2px solid black;
     border-radius: 50px;
+    height: 95%;
+    display: grid;
+    grid-template-columns: 325px auto;
+    grid-template-rows: 162.5px 162.5px auto;
+    grid-template-areas:
+        "sprite top"
+        "sprite tabs"
+        "left   focus";
+}
+
+#sprite {
+    grid-area: sprite;
+    background-color: beige;
+    height: 300px;
+    width: 300px;
+    margin: 1em 0em 0em 1em;
+    padding: .25em;
+    border: 2px solid black;
+    border-radius: 25px;
+}
+
+#topContent {
+    grid-area: top;
+    margin: 1em;
+    background-color: beige;
+    padding: .25rem;
+    border: 2px solid black;
+    border-radius: 25px;
+    display: flex;
+    align-content: center;
 }
 
 #leftContent {
+    grid-area: left;
     margin-left: 1em;
+}
+
+#focus {
+    grid-area: focus;
+    margin: 2em;
+}
+
+#info {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid black;
+}
+
+#species {
+    text-align: left;
+    font-size: 2em;
+}
+
+#types {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0em 1em;
+}
+
+#types img {
+    margin: .25em 0em;
 }
 
 #selectors {
@@ -66,14 +129,4 @@ header {
 
 .move {
     text-align: center;
-}
-
-#sprite {
-    background-color: beige;
-    height: 300px;
-    width: 300px;
-    margin: 1em 0em 0em 1em;
-    padding: .25em;
-    border: 2px solid black;
-    border-radius: 25px;
 }
