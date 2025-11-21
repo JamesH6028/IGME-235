@@ -1,5 +1,4 @@
 const PokeURL = "https://pokeapi.co/api/v2/";
-const TypeURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/types/generation-vi/x-y/";
 
 //list of types in order for indexing
 const Types = ["none", "normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost",
@@ -88,11 +87,13 @@ window.onload = (e) => {
     //creates the image of each type for later use
     for (let i = 1; i < 19; i++) {
         let img = document.createElement("img");
-        img.src = "../images/" + Types[i] + ".png";
+        img.src = "images/" + Types[i] + ".png";
         img.alt = Types[i];
         img.height *= 1.5;
         typeImgs.push(img);
     }
+
+    
 
     //event assignments
     document.querySelector("#search").onclick = searchButtonClicked
@@ -131,7 +132,7 @@ function searchButtonClicked() {
         statusText.innerHTML = "Status: Already Found!!";
         return;
     }
-    
+
     //tells the user that search has begun
     statusText.innerHTML = "Status: Searching...";
     pokemon.name = term;
