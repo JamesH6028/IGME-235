@@ -28,15 +28,17 @@ header {
 
 #inner {
     width: 80%;
-    margin: 0em 1rem;
+    margin: 0rem 1rem;
     background-color: beige;
-    padding: 1em 0em;
+    padding: 1rem 0rem;
     border: 2px solid black;
-    border-radius: 25px;
+    border-radius: 50px;
     justify-self: center;
 }
 
-#inner div, #inner h2, #inner h3{
+#inner div,
+#inner h2,
+#inner h3 {
     text-align: center;
 }
 
@@ -45,7 +47,6 @@ header {
     background-color: rgb(70, 166, 255);
     border: 2px solid black;
     border-radius: 50px;
-    height: 95%;
     display: grid;
     grid-template-columns: 325px auto;
     grid-template-rows: 162.5px 162.5px auto;
@@ -60,31 +61,61 @@ header {
     background-color: beige;
     height: 300px;
     width: 300px;
-    margin: 1em 0em 0em 1em;
+    margin: 1rem 0rem 0rem 1rem;
     padding: .25em;
     border: 2px solid black;
-    border-radius: 25px;
+    border-radius: 50px;
 }
 
 #topContent {
     grid-area: top;
-    margin: 1em;
+    margin: 1rem;
     background-color: beige;
-    padding: .25rem;
+    padding: 1rem;
     border: 2px solid black;
-    border-radius: 25px;
+    border-radius: 50px;
     display: flex;
     align-content: center;
+    justify-content: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#tabs {
+    grid-area: tabs;
+    display:flex;
+    align-content: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#subtitle {
+    background-color: beige;
+    padding: 1rem;
+    border: 2px solid black;
+    border-radius: 50px;
+    width:fit-content;
+    height: fit-content;
+    align-self: flex-end;
+    font-size: 2em;
 }
 
 #leftContent {
     grid-area: left;
-    margin-left: 1em;
+    margin-left: 1rem;
+}
+
+#dex {
+    background-color: beige;
+    padding: 1rem;
+    border: 2px solid black;
+    border-radius: 50px;
+    font-weight: bold;
 }
 
 #focus {
     grid-area: focus;
-    margin: 2em;
+    margin: 2rem;
 }
 
 #focus h2 {
@@ -95,58 +126,112 @@ header {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: 0em 1rem 0rem 0.5rem;
-    padding-right: 1rem;
-    border-right: 2px solid black;
+    padding: 0rem 1rem;
 }
 
-#number, #generation, #nickname {
+#info1, #info2{
+    border-right: 2px solid black;
+    flex: 0 1 auto;
+}
+
+#info1 {
+    padding-left: 5rem; 
+}
+
+
+#number,
+#generation,
+#nickname {
     font-size: 2em;
 }
 
 #typeText {
     text-align: center;
-    font-size: 1.5em;
+    font-size: 1.5rem;
 }
 
 #species {
-    font-size: 3.5em;
+    font-size: 3.5rem;
 }
 
 #types {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: 0em 1em;
+    margin-right: 0.5rem;
 }
 
 #types img {
-    margin: .25em 0em;
+    margin: .25rem 0rem;
 }
 
 #selectors {
-    margin-left: 1em;
+    margin-left: 1rem;
     display: flex;
 }
 
 #selectors div {
-    padding-right: 1em;
+    padding-right: 1rem;
 }
 
 
 #shinyBox {
-    margin-left: 1em;
+    margin-left: 1rem;
 }
 
 #moves {
-    height: 360px;
+    height: 400px;
     overflow: scroll;
     border: 2px solid black;
     background-color: beige;
-    border-radius: 25px;
+    border-radius: 50px;
 }
 
 .move {
+    padding: 1rem 0rem;
     text-align: center;
-    /*height: 100px;*/
+    display: grid;
+    grid-template-columns: 20% 60% 20%;
+    grid-template-rows: 30% 70%;
+    grid-template-areas:
+        "moveName moveName moveName"
+        "firstBox descript secondBox";
+    font-weight: bold;
+}
+
+.moveName {
+    grid-area: moveName;
+    text-align: center;
+    font-size: 1.5em;
+    text-decoration: underline;
+}
+
+.first {
+    grid-area: firstBox;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    text-align: left;
+    padding-right: 1em;
+    padding-left: 0.25em;
+    border-right: 2px solid black;
+}
+
+.second {
+    grid-area: secondBox;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    text-align: left;
+    padding: 0rem 1rem;
+    border-left: 2px solid black;
+}
+
+.moveDesc {
+    grid-area: descript;
+    align-self: center;
+    text-align: center;
+    padding: 1rem 1rem;
 }

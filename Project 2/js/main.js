@@ -12,6 +12,10 @@ const SpacedPokemon = ["type-null", "mr-mime", "mime-jr", "tapu-koko", "tapu-lel
     "brute-bonnet", "flutter-mane", "slither-wing", "sandy-shocks", "iron-treads", "iron-bundle", "iron-hands", "iron-jugulis", "iron-moth", "iron-thorns",
     "roaring-moon", "iron-valiant", "walking-wake", "iron-leaves", "gouging-fire", "raging-bolt", "iron-boulder", "iron-crown", "nidoran-m", "nidoran-f"];
 const Numerals = ["0", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+const Prefix = "jh6028";
+const NameKey = Prefix + "name";
+const BackColors = ["bbbbaa","bb5544","6699ff","aa4499","ccaa55","b6a561","a8b921","6666bb",
+    "888888","dd3e22","2f84d9","77cc44","f6c630","db4477","77ddff","5b4ac1","775544","ffaaff"];
 let typeImgs = [];
 let unusedGens = Gens.slice();
 let pokemon = {
@@ -32,7 +36,7 @@ let type_2 = "any";
 let generation = "any";
 let previous = "";
 let prevName = "";
-let type1Selector, type2Selector, sprite, currentType, statusText, genSelector, description, genDisplay, nameDisplay, movesDiv,
+let searchBar, type1Selector, type2Selector, sprite, currentType, statusText, genSelector, description, genDisplay, nameDisplay, movesDiv,
     formSelector, genderSelector, typesDiv, numDisplay, nicknameDisplay, typeText;
 
 let typesArrays = [];
@@ -47,6 +51,7 @@ for (let i = 0; i < 18; i++) {
 }
 
 window.onload = (e) => {
+    searchBar = document.querySelector("#pokemon");
     type1Selector = document.querySelector("#type1");
     type2Selector = document.querySelector("#type2");
     sprite = document.querySelector("#sprite");
@@ -74,7 +79,7 @@ window.onload = (e) => {
     document.querySelector("#search").onclick = searchButtonClicked
     document.querySelector("#generate").onclick = generateButtonClicked
     document.querySelector("#shiny").onchange = setShiny
-    document.querySelector("#pokemon").addEventListener("keyup", function (event) {
+    searchBar.addEventListener("keyup", function (event) {
         event.preventDefault();
         if (event.keyCode == 13) {
             document.querySelector("#search").click();
@@ -82,13 +87,21 @@ window.onload = (e) => {
     });
     formSelector.onchange = switchForm;
     genderSelector.onchange = changeGender;
+    
+    const StoredName = localStorage.getItem(NameKey);
+    if (StoredName){
+        searchBar.value = StoredName;
+    }else{
+        searchBar.value = "bulbasaur"
+    }
 
-    getSpeciesData(`${PokeURL}pokemon-species/bulbasaur/`);
+    document.querySelector("#search").click();
+    //getSpeciesData(`${PokeURL}pokemon-species/bulbasaur/`);
 };
 
 function searchButtonClicked() {
     prevName = pokemon.name;
-    let term = fixSearchTerm(document.querySelector("#pokemon").value);
+    let term = fixSearchTerm(searchBar.value);
     if (term == "") {
         statusText.innerHTML = "Status: Error, enter a pokemon name to search"
         return;
@@ -131,6 +144,7 @@ function switchForm() {
     let url = pokemon.forms[index].pokemon.url;
     pokemon.sprites = [];
     resetDiv(typesDiv);
+    resetDiv(movesDiv);
     getPokemonData(url);
 }
 
@@ -216,6 +230,7 @@ function dataLoadedSpecies(e) {
     }
     let obj = JSON.parse(xhr.responseText);
     pokemon.name = obj.name;
+    localStorage.setItem(NameKey, pokemon.name);
     pokemon.number = obj.pokedex_numbers[0].entry_number;
     pokemon.forms = obj.varieties.slice();
     pokemon.genderDiff = obj.has_gender_differences;
@@ -436,6 +451,8 @@ function getEnglishNickname(all) {
 function fixSentence(string) {
     string = string.replace(/\u000c/g, " ");
     string = string.replace(/\n/g, " ");
+    string = string.replace(pokemon.name.toUpperCase(),capitalizeFirstLetter(pokemon.name));
+    string = string.replace("POKéMON","Pokémon");
     return string;
 }
 
@@ -470,54 +487,61 @@ function displayMoves() {
     for (let i = 0; i < pokemon.moves.length; i++) {
         let box = document.createElement("div");
         box.className = "move";
+        box.style.backgroundColor = "#" + BackColors[Types.indexOf(pokemon.moves[i].type)-1];
         let nameBox = document.createElement("div");
         nameBox.innerHTML = fixMoveName(pokemon.moves[i].name);
-        nameBox.class = "moveName";
+        nameBox.className = "moveName";
         box.appendChild(nameBox);
+        let first = document.createElement("div");
+        first.className = "first";
+        let second = document.createElement("div");
+        second.className = "second";
         let descBox = document.createElement("div");
         descBox.innerHTML = pokemon.moves[i].description;
-        descBox.class = "moveDesc";
-        box.appendChild(descBox);
+        descBox.className = "moveDesc";
         let catBox = document.createElement("div");
         catBox.innerHTML = "Category: " + capitalizeFirstLetter(pokemon.moves[i].class);
-        catBox.class = "moveClass";
-        box.appendChild(catBox);
+        catBox.className = "moveClass";
+        first.appendChild(catBox);
         let typeBox = document.createElement("div");
-        typeBox.innerHTML = "Type: " + pokemon.moves[i].type;
-        typeBox.class = "moveType";
-        box.appendChild(typeBox);
+        typeBox.innerHTML = "Type: " + capitalizeFirstLetter(pokemon.moves[i].type);
+        typeBox.className = "moveType";
+        first.appendChild(typeBox);
         let powBox = document.createElement("div");
         if (pokemon.moves[i].power == null){
             pokemon.moves[i].power = "-";
         }
         powBox.innerHTML = "Power: " + pokemon.moves[i].power;
-        powBox.class = "movePower";
-        box.appendChild(powBox);
+        powBox.className = "movePower";
+        second.appendChild(powBox);
         let accBox = document.createElement("div");
         if (pokemon.moves[i].accuracy == null){
             pokemon.moves[i].accuracy = "-";
         }
         accBox.innerHTML = "Accuracy: " + pokemon.moves[i].accuracy;
-        accBox.class = "moveDesc";
-        box.appendChild(accBox);
+        accBox.className = "moveAcc";
+        second.appendChild(accBox);
         let ppBox = document.createElement("div");
         ppBox.innerHTML = "PP: " + pokemon.moves[i].pp;
         ppBox.class = "movePP";
-        box.appendChild(ppBox);
+        second.appendChild(ppBox);
+        box.appendChild(first);
+        box.appendChild(descBox);
+        box.appendChild(second);
         movesDiv.appendChild(box);
         if (i < pokemon.moves.length - 1) {
-            movesDiv.appendChild(document.createElement("hr"));
+            box.style.borderBottom = "2px solid black"
         }
     }
 }
 
 function displayTypes() {
     typesDiv.appendChild(typeText);
-    typeText.innerHTML = "Type";
+    typeText.innerHTML = "Type:";
     typesDiv.appendChild(typeImgs[Types.indexOf(pokemon.type1) - 1]);
     if (pokemon.type2 != "None") {
         typesDiv.appendChild(typeImgs[Types.indexOf(pokemon.type2) - 1]);
-        typeText.innerHTML = "Types";
+        typeText.innerHTML = "Types:";
     }
 }
 
