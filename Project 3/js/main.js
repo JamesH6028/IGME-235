@@ -65,7 +65,20 @@ function setup() {
     // Start the game loop
     app.ticker.add(gameLoop);
 
-    // Assign event listeners
+    // Assign events
+    document.addEventListener('keydown', (event) => {
+        const key = event.key;
+
+        if (key == "a") {
+            move(-1);
+        }
+        if (key == "d") {
+            move(1);
+        }
+        if (key == " ") {
+            jump();
+        }
+    });
 }
 
 function createLabelsAndButtons() {
@@ -141,17 +154,30 @@ function gameLoop() {
     let dt = 1 / app.ticker.FPS;
     if (dt > 1 / 12) dt = 1 / 12;
 
+    // move the player vertically
+    if (player.inAir) {
+        player.moveVertical(981, dt);
+        if (player.y > 300) {
+            player.y = 300;
+            player.inAir = false;
+        }
+    }
 
 }
 
-function moveLeft(e) {
+function move(direction) {
+    if (paused) return;
+
     let dt = 1 / app.ticker.FPS;
     if (dt > 1 / 12) dt = 1 / 12;
-    player.move(-1, dt);
+    player.moveHorizontal(direction, dt);
 }
 
-function moveRight(e) {
-    let dt = 1 / app.ticker.FPS;
-    if (dt > 1 / 12) dt = 1 / 12;
-    player.move(1, dt);
+function jump() {
+    if (paused || player.inAir) return;
+    player.jump();
+}
+
+function shoot() {
+    
 }
