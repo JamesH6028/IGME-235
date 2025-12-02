@@ -25,7 +25,7 @@ let stage;
 
 // scenes and undefined variables
 let startScene;
-let gameScene, player, lifeLabel, ammoLabel, shootSound, hitSound, explosionSound, damageSound, goal;
+let gameScene, player, lifeLabel, ammoLabel, shootSound, hitSound, explosionSound, damageSound, goal, ground, map;
 let gameOverScene;
 
 // arrays
@@ -79,6 +79,8 @@ function setup() {
             jump();
         }
     });
+
+    app.view.onclick = shoot;
 }
 
 function createLabelsAndButtons() {
@@ -145,6 +147,14 @@ function startGame() {
     startScene.visible = false;
     gameOverScene.visible = false;
     gameScene.visible = true;
+    let p = new Platform();
+    platforms.push(p);
+    gameScene.addChild(p);
+
+    ground = new Platform(0xAAAAAA, 0, 580, 2000, 20);
+    gameScene.addChild(ground);
+
+    map = new Map(platforms, ground);
     paused = false;
 }
 
@@ -156,11 +166,16 @@ function gameLoop() {
 
     // move the player vertically
     if (player.inAir) {
-        player.moveVertical(981, dt);
-        if (player.y > 300) {
-            player.y = 300;
+        player.moveVertical(700, dt);
+        if (player.y > 550) {
+            player.y = 550;
             player.inAir = false;
         }
+    }
+
+    // move bullets
+    for (let shot of playerShots) {
+        shot.move(dt);
     }
 
 }
@@ -170,7 +185,8 @@ function move(direction) {
 
     let dt = 1 / app.ticker.FPS;
     if (dt > 1 / 12) dt = 1 / 12;
-    player.moveHorizontal(direction, dt);
+    //player.moveHorizontal(direction, dt);
+    map.move(direction, player.speed, dt);
 }
 
 function jump() {
@@ -178,6 +194,10 @@ function jump() {
     player.jump();
 }
 
-function shoot() {
-    
+function shoot(e) {
+    if (paused) return;
+
+    let shot = new Bullet(0xFFFF00, player.x, player.y);
+    playerShots.push(shot);
+    gameScene.addChild(shot);
 }
