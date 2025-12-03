@@ -35,6 +35,11 @@ class Player extends PIXI.Graphics {
         this.inAir = true;
         this.ySpeed = 600;
     }
+
+    hitHead() {
+        this.y += 10;
+        this.ySpeed *= -0.5;
+    }
 }
 
 class Map {
@@ -55,14 +60,27 @@ class Map {
         for (let plat of this.platforms) {
             if (!plat.isOnScreen()) continue;
             if (rectsIntersect(player, plat)) {
-                if (player.y + player.height > plat.x + (.1 * plat.height)) {
+                if (player.x + player.width < plat.x + 10 && player.y > plat.y + (.25 * plat.height)) {
+                    plat.x = player.x + player.width;
+                    return;
+                }
+                if (player.x > plat.x + plat.width - 10 && player.y > plat.y + (.25 * plat.height)) {
+                    plat.x = player.x - plat.width;
+                    return;
+                }
+                if (player.y <= plat.y + (.25 * plat.height)) {
                     this.activePlatform = plat;
-                    return "above";
+                    player.land(plat.y);
+                    return;
+                }
+                if (player.y + player.height >= plat.y + plat.height - (.25 * plat.height)) {
+                    player.hitHead();
+                    return;
                 }
             }
         }
         if (rectsIntersect(player, this.ground)) {
-            return "ground";
+            player.land(this.ground.y);
         }
     }
 
@@ -86,8 +104,7 @@ class Platform extends PIXI.Graphics {
     }
 
     isOnScreen(width = 900, height = 600) {
-        if (this.x < 900 && this.x + this.width > 0) return true;
-        return false;
+        if (this.x < 900 && this.x + width > 0) return true;
     }
 }
 

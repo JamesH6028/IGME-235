@@ -167,12 +167,7 @@ function gameLoop() {
     // move the player vertically
     if (player.inAir) {
         player.moveVertical(700, dt);
-        let collis = map.checkCollision(player);
-        if (collis == "above") {
-            player.land(400);
-        } else if (collis == "ground") {
-            player.land(ground.y);
-        }
+        map.checkCollision(player);
     } else if (player.y < player.baseY) {
         map.isOnPlatform(player);
     }
