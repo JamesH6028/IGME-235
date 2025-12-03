@@ -1,0 +1,34 @@
+#poem {
+    height: 50vh;
+    width: 75vh;
+    border: 10px solid gray;
+    border-radius: 50px;
+    grid-area: center;
+    margin-top: 2rem;
+    padding: 2rem;
+    background-color: black;
+}
+
+#wrapper {
+    display: grid;
+    grid-template-columns: 2fr auto 2fr;
+    grid-template-rows: 10vh auto 20vh;
+    grid-template-areas: 
+    "l-gutter t-gutter r-gutter"
+    "l-gutter center r-gutter"
+    "l-gutter buttons r-gutter";
+}
+
+.normalText {
+    color: limegreen;
+    font-size: x-large;
+}
+
+.crisisText {
+    color: red;
+    font-size: x-large;
+}
+
+body {
+    background-color:burlywood;
+}
