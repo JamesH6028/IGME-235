@@ -151,7 +151,7 @@ function startGame() {
     platforms.push(p);
     gameScene.addChild(p);
 
-    ground = new Platform(0xAAAAAA, 0, 580, 2000, 20);
+    ground = new Platform(0xAAAAAA, 0, 580, 1000, 20);
     gameScene.addChild(ground);
 
     map = new Map(platforms, ground);
@@ -167,10 +167,14 @@ function gameLoop() {
     // move the player vertically
     if (player.inAir) {
         player.moveVertical(700, dt);
-        if (player.y > 550) {
-            player.y = 550;
-            player.inAir = false;
+        let collis = map.checkCollision(player);
+        if (collis == "above") {
+            player.land(400);
+        } else if (collis == "ground") {
+            player.land(ground.y);
         }
+    } else if (player.y < player.baseY) {
+        map.isOnPlatform(player);
     }
 
     // move bullets
@@ -197,7 +201,7 @@ function jump() {
 function shoot(e) {
     if (paused) return;
 
-    let shot = new Bullet(0xFFFF00, player.x, player.y);
+    let shot = new Bullet(0xFFFF00, player.x + player.width, player.y - (.5 * player.height));
     playerShots.push(shot);
     gameScene.addChild(shot);
 }
