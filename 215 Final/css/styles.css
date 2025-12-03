@@ -1,5 +1,15 @@
+#wrapper {
+    display: grid;
+    grid-template-columns: 2fr auto 2fr;
+    grid-template-rows: 10vh auto 20vh;
+    grid-template-areas:
+        "l-gutter t-gutter r-gutter"
+        "l-gutter center r-gutter"
+        "l-gutter buttons r-gutter";
+}
+
 #poem {
-    height: 50vh;
+    height: 55vh;
     width: 75vh;
     border: 10px solid gray;
     border-radius: 50px;
@@ -9,14 +19,12 @@
     background-color: black;
 }
 
-#wrapper {
-    display: grid;
-    grid-template-columns: 2fr auto 2fr;
-    grid-template-rows: 10vh auto 20vh;
-    grid-template-areas: 
-    "l-gutter t-gutter r-gutter"
-    "l-gutter center r-gutter"
-    "l-gutter buttons r-gutter";
+#controls {
+    height: 10vh;
+    grid-area: buttons;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .normalText {
@@ -30,5 +38,14 @@
 }
 
 body {
-    background-color:burlywood;
+    background-color: burlywood;
+}
+
+.widgets {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+#start {
+    margin-right: 1em;
 }
