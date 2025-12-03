@@ -60,14 +60,14 @@ class Map {
         for (let plat of this.platforms) {
             if (!plat.isOnScreen()) continue;
             if (rectsIntersect(player, plat)) {
-                if (player.x + player.width < plat.x + 10 && player.y > plat.y + (.25 * plat.height)) {
-                    plat.x = player.x + player.width;
-                    return;
-                }
-                if (player.x > plat.x + plat.width - 10 && player.y > plat.y + (.25 * plat.height)) {
-                    plat.x = player.x - plat.width;
-                    return;
-                }
+                // if (player.x + player.width < plat.x + 10 && player.y > plat.y + (.25 * plat.height)) {
+                //     plat.x = player.x + player.width;
+                //     return;
+                // }
+                // if (player.x > plat.x + plat.width - 10 && player.y > plat.y + (.25 * plat.height)) {
+                //     plat.x = player.x - plat.width;
+                //     return;
+                // }
                 if (player.y <= plat.y + (.25 * plat.height)) {
                     this.activePlatform = plat;
                     player.land(plat.y);

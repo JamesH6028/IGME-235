@@ -150,6 +150,12 @@ function startGame() {
     let p = new Platform();
     platforms.push(p);
     gameScene.addChild(p);
+    let p1 = new Platform(0xFFFFFF, 1000, 300);
+    platforms.push(p1);
+    gameScene.addChild(p1);
+    let p2 = new Platform(0xFFFFFF, 750, 350);
+    platforms.push(p2);
+    gameScene.addChild(p2);
 
     ground = new Platform(0xAAAAAA, 0, 580, 1000, 20);
     gameScene.addChild(ground);
