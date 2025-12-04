@@ -39,6 +39,7 @@ let pickups = [];
 let paused = true;
 let movingLeft = false;
 let movingRight = false;
+let collideWithPlat = false;
 
 function setup() {
     stage = app.stage;
@@ -183,17 +184,20 @@ function gameLoop() {
     let dt = 1 / app.ticker.FPS;
     if (dt > 1 / 12) dt = 1 / 12;
 
-    if (movingLeft) {
-        map.move(-1, player.xSpeed, dt);
-    } else if (movingRight) {
-        map.move(1, player.xSpeed, dt);
-    }
     // move the player vertically
     if (player.inAir) {
         player.moveVertical(700, dt);
-        map.checkCollision(player);
+        collideWithPlat = map.checkCollision(player);
     } else if (player.y < player.baseY) {
-        map.isOnPlatform(player);
+        map.stepOffPlat(player);
+    }
+
+    if (!collideWithPlat) {
+        if (movingLeft) {
+            map.move(-1, player.xSpeed, dt);
+        } else if (movingRight) {
+            map.move(1, player.xSpeed, dt);
+        }
     }
 
     // move bullets
@@ -205,7 +209,7 @@ function gameLoop() {
 
 function updateMove(direction, starting) {
     if (paused) return;
-    if (direction == 1){
+    if (direction == 1) {
         movingRight = starting;
         return;
     }
@@ -217,7 +221,6 @@ function move(direction) {
 
     let dt = 1 / app.ticker.FPS;
     if (dt > 1 / 12) dt = 1 / 12;
-    //player.moveHorizontal(direction, dt);
     map.move(direction, player.speed, dt);
 }
 

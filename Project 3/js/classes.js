@@ -16,10 +16,6 @@ class Player extends PIXI.Graphics {
         this.inAir = false;
     }
 
-    moveHorizontal(direction = 1, dt = 1 / 60) {
-        this.x += direction * this.xSpeed * dt;
-    }
-
     moveVertical(g = 981, dt = 1 / 60) {
         this.ySpeed -= dt * g;
         this.y -= this.ySpeed * dt;
@@ -60,31 +56,31 @@ class Map {
         for (let plat of this.platforms) {
             if (!plat.isOnScreen()) continue;
             if (rectsIntersect(player, plat)) {
-                // if (player.x + player.width < plat.x + 10 && player.y > plat.y + (.25 * plat.height)) {
-                //     plat.x = player.x + player.width;
-                //     return;
-                // }
-                // if (player.x > plat.x + plat.width - 10 && player.y > plat.y + (.25 * plat.height)) {
-                //     plat.x = player.x - plat.width;
-                //     return;
-                // }
+                if (player.x + player.width < plat.x + 10 && player.y > plat.y + (.25 * plat.height)) {
+                    return true;
+                }
+                if (player.x > plat.x + plat.width - 10 && player.y > plat.y + (.25 * plat.height)) {
+                    return true;
+                }
                 if (player.y <= plat.y + (.25 * plat.height)) {
                     this.activePlatform = plat;
                     player.land(plat.y);
-                    return;
+                    return false;
                 }
                 if (player.y + player.height >= plat.y + plat.height - (.25 * plat.height)) {
                     player.hitHead();
-                    return;
+                    return false;
                 }
             }
         }
         if (rectsIntersect(player, this.ground)) {
             player.land(this.ground.y);
+            return false;
         }
+        return false;
     }
 
-    isOnPlatform(player) {
+    stepOffPlat(player) {
         if (player.x + player.width < this.activePlatform.x || player.x > this.activePlatform.x + this.activePlatform.width) {
             player.inAir = true;
         }
