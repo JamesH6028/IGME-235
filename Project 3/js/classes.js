@@ -11,7 +11,7 @@ class Player extends PIXI.Graphics {
         this.beginFill(0x00FF00);
         this.drawRect(0, -100, 50, 100);
         this.endFill();
-        this.xSpeed = 500;
+        this.xSpeed = 300;
         this.ySpeed = 0;
         this.inAir = false;
     }

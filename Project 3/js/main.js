@@ -37,6 +37,8 @@ let pickups = [];
 
 // other pre-defined variables
 let paused = true;
+let movingLeft = false;
+let movingRight = false;
 
 function setup() {
     stage = app.stage;
@@ -70,15 +72,26 @@ function setup() {
         const key = event.key;
 
         if (key == "a") {
-            move(-1);
+            updateMove(-1, true);
         }
         if (key == "d") {
-            move(1);
+            updateMove(1, true);
         }
         if (key == " ") {
             jump();
         }
     });
+
+    document.addEventListener('keyup', (event) => {
+        const key = event.key;
+
+        if (key == "a") {
+            updateMove(-1, false);
+        }
+        if (key == "d") {
+            updateMove(1, false);
+        }
+    })
 
     app.view.onclick = shoot;
 }
@@ -170,6 +183,11 @@ function gameLoop() {
     let dt = 1 / app.ticker.FPS;
     if (dt > 1 / 12) dt = 1 / 12;
 
+    if (movingLeft) {
+        map.move(-1, player.xSpeed, dt);
+    } else if (movingRight) {
+        map.move(1, player.xSpeed, dt);
+    }
     // move the player vertically
     if (player.inAir) {
         player.moveVertical(700, dt);
@@ -183,6 +201,15 @@ function gameLoop() {
         shot.move(dt);
     }
 
+}
+
+function updateMove(direction, starting) {
+    if (paused) return;
+    if (direction == 1){
+        movingRight = starting;
+        return;
+    }
+    movingLeft = starting;
 }
 
 function move(direction) {
