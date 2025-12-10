@@ -1,16 +1,11 @@
-class Player extends PIXI.Graphics {
-    constructor(x = 400, y = 580) {
-        super();
-        // this.anchor.set(.5, .5);
-        // this.scale.set(0.2);
-        this.width = 50;
-        this.height = 100;
+class Player extends PIXI.Sprite {
+    constructor(x = 425, y = 580) {
+        super(app.loader.resources["images/player.png"].texture);
+        this.anchor.set(0, 1);
+        this.scale.set(4);
         this.x = x;
         this.y = y;
         this.baseY = y;
-        this.beginFill(0x00FF00);
-        this.drawRect(0, -100, 50, 100);
-        this.endFill();
         this.xSpeed = 300;
         this.ySpeed = 0;
         this.inAir = false;
@@ -50,27 +45,20 @@ class Player extends PIXI.Graphics {
     }
 }
 
-class Enemy extends PIXI.Graphics {
-    constructor(type = "walker", x = 500, y = 580, min = 0, max = 0) {
-        super();
+class Enemy extends PIXI.Sprite {
+    constructor(img, type = "walker", x = 0, y = 0, min = 0, max = 0, startDirection = 1) {
+        super(app.loader.resources[img].texture);
+        this.anchor.set(0.5, 0.5);
+        this.scale.set(4);
         this.type = type;
         this.x = x;
         this.y = y;
-        let width = 50;
-        let height = 100;
         let health = 5;
         let cooldown = 2;
         if (type == "drone") {
-            width = 80;
-            height = 40;
             health = 2;
             cooldown = 1.25;
         }
-        this.width = width;
-        this.height = height;
-        this.beginFill(0xFF0000);
-        this.drawRect(0, -1 * height, width, height);
-        this.endFill();
         this.health = health;
         this.isAlive = true;
         this.cooldown = cooldown;
@@ -78,7 +66,7 @@ class Enemy extends PIXI.Graphics {
         this.facingRight = false;
         this.acceleration = 200;
         this.maxSpeed = 200;
-        this.ySpeed = 200;
+        this.ySpeed = 200 * startDirection;
         this.min = min;
         this.max = max;
     }
@@ -104,8 +92,10 @@ class Enemy extends PIXI.Graphics {
     changeDirection(player) {
         if (player.x < this.x + (this.width / 2) && this.facingRight) {
             this.facingRight = false;
+            this.scale.set(4, 4);
         } else if (player.x > this.x + (this.width / 2) && !this.facingRight) {
             this.facingRight = true;
+            this.scale.set(-4, 4);
         }
     }
 
@@ -123,13 +113,13 @@ class Enemy extends PIXI.Graphics {
     // checks if it collides with the player
     checkCollision(player) {
         if (!rectsIntersect(player, this)) return "none";
-        if (this.type == "drone" && player.y < this.y - (this.height * 0.5)) return "stomp";
+        if (this.type == "drone" && player.y < this.y) return "stomp";
         return "damage";
     }
 }
 
 class Map {
-    constructor(platforms, ground, enemies) {
+    constructor(platforms, ground, enemies, goal) {
         this.platforms = platforms;
         this.ground = ground;
         this.activePlatform = null;
@@ -137,6 +127,7 @@ class Map {
         this.enemyProjectiles = [];
         this.playerProjectiles = [];
         this.pickups = [];
+        this.goal = goal;
     }
 
     // moves the map
@@ -170,6 +161,9 @@ class Map {
         for (let p of this.pickups) {
             p.x += direction * speed * dt;
         }
+
+        // move goal
+        this.goal.x += direction * speed * dt;
     }
 
     // handles collision between the player and platforms
@@ -183,7 +177,7 @@ class Map {
                 if (player.x > plat.x + plat.width - 10 && player.y > plat.y + (.25 * plat.height)) {
                     return true;
                 }
-                if (player.y <= plat.y + (.25 * plat.height)) {
+                if (player.y <= plat.y + (.4 * plat.height)) {
                     this.activePlatform = plat;
                     player.land(plat.y);
                     return false;
@@ -205,6 +199,7 @@ class Map {
     stepOffPlat(player) {
         if (player.x + player.width < this.activePlatform.x || player.x > this.activePlatform.x + this.activePlatform.width) {
             player.inAir = true;
+            this.activePlatform = null;
         }
     }
 
@@ -216,7 +211,7 @@ class Map {
 }
 
 class Platform extends PIXI.Graphics {
-    constructor(color = 0xFFFFFF, x = 400, y = 400, width = 120, height = 40) {
+    constructor(color = 0xFFFFFF, x = 0, y = 0, width = 120, height = 40) {
         super();
         this.x = x;
         this.y = y;
@@ -255,6 +250,7 @@ class Bullet extends PIXI.Graphics {
 class Heart extends PIXI.Sprite {
     constructor(x = 0, y = 0, img, visible = true) {
         super(app.loader.resources[img].texture);
+        this.anchor.set(0.5, 0.5);
         this.scale.set(0.5);
         this.visible = visible;
         this.x = x;
@@ -262,21 +258,14 @@ class Heart extends PIXI.Sprite {
     }
 }
 
-class Pickup extends PIXI.Graphics {
-    constructor(x = 0, y = 0, type = "health") {
-        super();
+class Pickup extends PIXI.Sprite {
+    constructor(img, x = 0, y = 0, type = "health") {
+        super(app.loader.resources[img].texture);
+        this.anchor.set(0, 1);
         this.x = x;
         this.y = y;
         this.type = type;
-        let color = 0x072602;
-        if (type == "health") {
-            color = 0x990994;
-        }
-        this.color = color;
-        this.size = 30;
-        this.beginFill(color);
-        this.drawRect(0, -30, 30, 30);
-        this.endFill();
+        this.size = this.width;
         this.inAir = true;
         this.ySpeed = 0;
         this.isAlive = true;
@@ -287,5 +276,16 @@ class Pickup extends PIXI.Graphics {
         if (!this.inAir) return;
         this.ySpeed += 700 * dt;
         this.y += this.ySpeed * dt;
+    }
+}
+
+class Finish extends PIXI.Graphics {
+    constructor(x = 3000, y = 580) {
+        super();
+        this.x = x;
+        this.y = y;
+        this.beginFill(0x00AAAA);
+        this.drawRect(0, -700, 50, 700);
+        this.endFill();
     }
 }

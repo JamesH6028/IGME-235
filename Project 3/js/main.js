@@ -15,8 +15,13 @@ const gravity = -9;
 // pre-load the images 
 app.loader.
     add([
+        "images/player.png",
         "images/emptyHeart.png",
-        "images/fullHeart.png"
+        "images/fullHeart.png",
+        "images/drone.png",
+        "images/walker.png",
+        "images/ammoBox.png",
+        "images/healthBox.png"
     ]);
 app.loader.onComplete.add(setup);
 app.loader.load();
@@ -25,7 +30,7 @@ let stage;
 
 // scenes and undefined variables
 let startScene;
-let gameScene, player, ammoLabel, shootSound, hitSound, explosionSound, damageSound, goal, ground, map;
+let gameScene, player, ammoLabel, shootSound, hitSound, explosionSound, damageSound, goal, ground, map, lwall, rwall;
 let gameOverScene;
 let victoryScene;
 
@@ -39,6 +44,8 @@ let fullHearts = [];
 let emptyHearts = [];
 
 // other pre-defined variables
+const BrunoFont = `"Bruno Ace SC", sans-serif`;
+const AntaFont = `"Anta", sans-serif`;
 let paused = true;
 let movingLeft = false;
 let movingRight = false;
@@ -83,6 +90,17 @@ function setup() {
     gameScene.addChild(player);
 
     // Load sound effects
+    shootSound = new Howl({
+        src: ['sounds/pew.wav']
+    });
+
+    hitSound = new Howl({
+        src: ['sounds/clang.wav']
+    });
+
+    explosionSound = new Howl({
+        src: ['sounds/explosion.mp3']
+    });
 
     // Start the game loop
     app.ticker.add(gameLoop);
@@ -121,9 +139,9 @@ function setup() {
 
 function createLabelsAndButtons() {
     let buttonStyle = new PIXI.TextStyle({
-        fill: 0xFF0000,
+        fill: 0x99a9c2,
         fontSize: 48,
-        fontFamily: "Futura"
+        fontFamily: AntaFont
     });
 
     // set up 'startScene'
@@ -131,12 +149,12 @@ function createLabelsAndButtons() {
     let titleLabel = new PIXI.Text("ROBO-REVOLT");
     titleLabel.style = new PIXI.TextStyle({
         fill: 0xFFFFFF,
-        fontSize: 96,
-        fontFamily: "Futura",
-        stroke: 0xFF0000,
+        fontSize: 80,
+        fontFamily: BrunoFont,
+        stroke: 0x707680,
         strokeThickness: 6,
     });
-    titleLabel.x = 120;
+    titleLabel.x = 85;
     titleLabel.y = 60;
     startScene.addChild(titleLabel);
 
@@ -145,31 +163,31 @@ function createLabelsAndButtons() {
     controlsTitleLabel.style = new PIXI.TextStyle({
         fill: 0xFFFFFF,
         fontSize: 32,
-        fontFamily: "Futura",
-        stroke: 0xFF0000,
+        fontFamily: AntaFont,
+        stroke: 0x707680,
         strokeThickness: 6
     });
-    controlsTitleLabel.x = 395;
+    controlsTitleLabel.x = 385;
     controlsTitleLabel.y = 220;
     startScene.addChild(controlsTitleLabel);
 
     // make controls label
-    let controlsLabel = new PIXI.Text("  A/D: move\nspace: jump\n click: shoot\n      R: reload");
+    let controlsLabel = new PIXI.Text("   A/D: move\nspace: jump\n  click: shoot\n       R: reload");
     controlsLabel.style = new PIXI.TextStyle({
         fill: 0xFFFFFF,
         fontSize: 28,
-        fontFamily: "Futura",
-        stroke: 0xFF0000,
+        fontFamily: AntaFont,
+        stroke: 0x707680,
         strokeThickness: 6
     });
-    controlsLabel.x = 375;
+    controlsLabel.x = 355;
     controlsLabel.y = 280;
     startScene.addChild(controlsLabel);
 
     // make start game button
     let startButton = new PIXI.Text("Start Game");
     startButton.style = buttonStyle;
-    startButton.x = 350;
+    startButton.x = 330;
     startButton.y = sceneHeight - 100;
     startButton.interactive = true;
     startButton.buttonMode = true;
@@ -179,63 +197,83 @@ function createLabelsAndButtons() {
     startScene.addChild(startButton);
 
     // add hearts 
-    let full1 = new Heart(10, 10, "images/fullHeart.png");
+    let full1 = new Heart(58, 58, "images/fullHeart.png");
     fullHearts.push(full1);
-    gameScene.addChild(full1);
-    let full2 = new Heart(100, 10, "images/fullHeart.png");
+    let full2 = new Heart(148, 58, "images/fullHeart.png");
     fullHearts.push(full2);
-    gameScene.addChild(full2);
-    let full3 = new Heart(190, 10, "images/fullHeart.png");
+    let full3 = new Heart(238, 58, "images/fullHeart.png");
     fullHearts.push(full3);
-    gameScene.addChild(full3);
-    let empty1 = new Heart(10, 10, "images/emptyHeart.png", false);
+    let empty1 = new Heart(58, 58, "images/emptyHeart.png", false);
     emptyHearts.push(empty1);
-    gameScene.addChild(empty1);
-    let empty2 = new Heart(100, 10, "images/emptyHeart.png", false);
+    let empty2 = new Heart(148, 58, "images/emptyHeart.png", false);
     emptyHearts.push(empty2);
-    gameScene.addChild(empty2);
-    let empty3 = new Heart(190, 10, "images/emptyHeart.png", false);
+    let empty3 = new Heart(238, 58, "images/emptyHeart.png", false);
     emptyHearts.push(empty3);
-    gameScene.addChild(empty3);
 
     // make the ammo label
     let textStyle = new PIXI.TextStyle({
         fill: 0xFFFFFF,
         fontSize: 28,
-        fontFamily: "Futura",
-        stroke: 0xFF0000,
+        fontFamily: AntaFont,
+        stroke: 0x707680,
         strokeThickness: 4
     });
     ammoLabel = new PIXI.Text(`Ammo: ${ammo} / ${clipSize} | ${heldAmmo}`);
     ammoLabel.style = textStyle;
     ammoLabel.x = 20;
     ammoLabel.y = 120;
-    gameScene.addChild(ammoLabel);
 
+    // make the "game over" text
     let gameOverText = new PIXI.Text("You Died!");
     textStyle = new PIXI.TextStyle({
         fill: 0xFFFFFF,
         fontSize: 64,
         fontFamily: "Futura",
-        stroke: 0xFF0000,
+        stroke: 0x707680,
         strokeThickness: 6
     });
     gameOverText.style = textStyle;
-    gameOverText.x = 100;
+    gameOverText.x = 305;
     gameOverText.y = sceneHeight / 2 - 160;
     gameOverScene.addChild(gameOverText);
 
-    // 3B - make "play again?" button
+    // make "play again?" button
     let playAgainButton = new PIXI.Text("Play Again?");
     playAgainButton.style = buttonStyle;
-    playAgainButton.x = 150;
-    playAgainButton.y = sceneHeight - 100;
+    playAgainButton.x = 310;
+    playAgainButton.y = sceneHeight - 200;
     playAgainButton.interactive = true;
     playAgainButton.buttonMode = true;
-    playAgainButton.on("pointerup", startGame); // startGame is a function reference
-    playAgainButton.on('pointerover', e => e.target.alpha = 0.7); // concise arrow function with no brackets
-    playAgainButton.on('pointerout', e => e.currentTarget.alpha = 1.0); // ditto
+    playAgainButton.on("pointerup", startGame);
+    playAgainButton.on('pointerover', e => e.target.alpha = 0.7);
+    playAgainButton.on('pointerout', e => e.currentTarget.alpha = 1.0);
     gameOverScene.addChild(playAgainButton);
+
+    // make the "victory" text
+    let victoryText = new PIXI.Text("You Won!");
+    textStyle = new PIXI.TextStyle({
+        fill: 0xFFFFFF,
+        fontSize: 64,
+        fontFamily: "Futura",
+        stroke: 0x707680,
+        strokeThickness: 6
+    });
+    victoryText.style = textStyle;
+    victoryText.x = 310;
+    victoryText.y = sceneHeight / 2 - 160;
+    victoryScene.addChild(victoryText);
+
+    // make the 2nd "play again?" button
+    let playAgainButton2 = new PIXI.Text("Play Again?");
+    playAgainButton2.style = buttonStyle;
+    playAgainButton2.x = 310;
+    playAgainButton2.y = sceneHeight - 200;
+    playAgainButton2.interactive = true;
+    playAgainButton2.buttonMode = true;
+    playAgainButton2.on("pointerup", startGame);
+    playAgainButton2.on('pointerover', e => e.target.alpha = 0.7);
+    playAgainButton2.on('pointerout', e => e.currentTarget.alpha = 1.0);
+    victoryScene.addChild(playAgainButton2);
 }
 
 function startGame() {
@@ -245,10 +283,6 @@ function startGame() {
     gameScene.visible = true;
 
     life = 3;
-    for (let i = 0; i < 3; i++) {
-        fullHearts[i].visible = true;
-        emptyHearts[i].visible = false;
-    }
     invincible = false;
     inTimer = 0;
     player.land(player.baseY);
@@ -257,30 +291,57 @@ function startGame() {
     reloading = true;
     reloadTimer = 1.99;
 
-    // Create platforms & ground
-    let p = new Platform();
-    platforms.push(p);
-    gameScene.addChild(p);
-    let p1 = new Platform(0xFFFFFF, 1000, 300);
-    platforms.push(p1);
-    gameScene.addChild(p1);
-    let p2 = new Platform(0xFFFFFF, 750, 350);
-    platforms.push(p2);
-    gameScene.addChild(p2);
-    ground = new Platform(0xAAAAAA, 0, 580, 1000, 20);
+    // create the goal & ground
+    goal = new Finish();
+    gameScene.addChild(goal);
+    ground = new Platform(0x2E1600, 0, 580, 1000, 20);
     gameScene.addChild(ground);
 
+    // create bounding walls
+    lwall = new Platform(0x000000, -450, -50, 450, 700);
+    platforms.push(lwall);
+    gameScene.addChild(lwall);
+    rwall = new Platform(0x000000, goal.x + goal.width, -50, 450, 700);
+    platforms.push(rwall);
+    gameScene.addChild(rwall);
+
+    // create platforms
+    createPlatform(400, 400);
+    createPlatform(700, 350);
+    createPlatform(1000, 300);
+    createPlatform(1450, 400);
+    createPlatform(1700, 200);
+    createPlatform(1950, 400);
+    createPlatform(2350, 400);
+    createPlatform(2350, 200);
+
+
+
     // create enemies
-    // CREATE CONSTRUCTOR FUNCTIONS FOR THE ENEMIES/PLATFORMS
-    let walker = new Enemy();
-    gameScene.addChild(walker);
-    enemies.push(walker);
+    createWalker(800, 522);
+    createWalker(1260, 522);
+    createWalker(1760, 142);
+    createWalker(2410, 342);
+    createWalker(2410, 142);
 
-    let drone = new Enemy("drone", 500, 200, 300, 150);
-    gameScene.addChild(drone);
-    enemies.push(drone);
+    createDrone(610, 200, 300, 150);
+    createDrone(910, 250, 300, 150, -1);
+    createDrone(1760, 440, 475, 400);
+    createDrone(2210, 200, 300, 150);
+    createDrone(2620, 200, 400, 150);
+    createDrone(2820, 350, 400, 150, -1);
 
-    map = new Map(platforms, ground, enemies);
+    // add ui elements
+    for (let i = 0; i < 3; i++) {
+        fullHearts[i].visible = true
+        gameScene.addChild(fullHearts[i]);
+        emptyHearts[i].visible = false;
+        gameScene.addChild(emptyHearts[i]);
+    }
+    gameScene.addChild(ammoLabel);
+
+    map = new Map(platforms, ground, enemies, goal);
+    app.renderer.backgroundColor = 0x4f4e4d;
     paused = false;
 }
 
@@ -317,11 +378,16 @@ function gameLoop() {
 
     // moves the map so long as the player isn't colliding with a platform
     if (!collideWithPlat) {
-        if (movingLeft) {
+        if (movingLeft && player.x - 1 > lwall.x + lwall.width) {
             map.move(-1, player.xSpeed, dt);
-        } else if (movingRight) {
+        } else if (movingRight && player.x + player.width < rwall.x - 1) {
             map.move(1, player.xSpeed, dt);
         }
+    }
+
+    // check if the player crosses the goal
+    if (rectsIntersect(player, goal)) {
+        end(true);
     }
 
     // enemies shoot and move
@@ -330,6 +396,7 @@ function gameLoop() {
         if (!isOnScreen(e, sceneWidth, sceneHeight)) continue;
         let col = e.checkCollision(player);
         if (col == "stomp") {
+            explosionSound.play();
             e.takeDamage(2);
             spawnPickup(e);
             entityDeath(e);
@@ -390,6 +457,7 @@ function gameLoop() {
                 e.takeDamage(s.damage);
                 entityDeath(s);
                 if (!e.isAlive) {
+                    explosionSound.play();
                     spawnPickup(e);
                     entityDeath(e);
                 }
@@ -445,9 +513,10 @@ function gameLoop() {
 function end(win) {
     movingLeft = false;
     movingRight = false;
+    collideWithPlat = false;
     paused = true;
 
-    // clear out arrays
+    // clear out arrays & remove children
     platforms.forEach(p => gameScene.removeChild(p));
     platforms = [];
     enemies.forEach(e => gameScene.removeChild(e));
@@ -458,7 +527,12 @@ function end(win) {
     enemyShots = [];
     pickups.forEach(p => gameScene.removeChild(p));
     pickups = [];
+    gameScene.removeChild(goal);
+    fullHearts.forEach(h => gameScene.removeChild(h));
+    emptyHearts.forEach(h => gameScene.removeChild(h));
+    gameScene.removeChild(ammoLabel);
 
+    app.renderer.backgroundColor = 0x000000;
     // goes to the victory scene if the player wins or game over scene if they lose
     if (win) {
         victoryScene.visible = true;
@@ -471,6 +545,7 @@ function end(win) {
 // decreases the player's life
 function decreaseLife() {
     if (invincible) return;
+    hitSound.play();
     life--;
     fullHearts[life].visible = false;
     emptyHearts[life].visible = true;
@@ -489,9 +564,11 @@ function increaseLife() {
 function updateMove(direction, starting) {
     if (paused) return;
     if (direction == 1) {
+        if (!movingRight) player.scale.set(4, 4);
         movingRight = starting;
         return;
     }
+    if (!movingLeft) player.scale.set(-4, 4);
     movingLeft = starting;
 }
 
@@ -503,7 +580,7 @@ function jump() {
 
 // fires a player bullet and updates the ammo count
 function playerShoot(e) {
-    if (ammo <= 0 || reloading) return;
+    if (paused || ammo <= 0 || reloading) return;
     ammo--;
     ammoLabel.text = `Ammo: ${ammo} / ${clipSize} | ${heldAmmo}`;
     shoot(player, playerShots, 0xFFFF00);
@@ -513,6 +590,7 @@ function playerShoot(e) {
 function shoot(e, shotArray, color, type = "not drone") {
     if (paused) return;
 
+    shootSound.play();
     let xspawn = e.x + e.width;
     let yspawn = e.y - (.5 * e.height);
     let shotDirection = 1;
@@ -560,9 +638,13 @@ function entityDeath(e) {
 function spawnPickup(e) {
     let chance = getRandomInt(0, 10);
     let type = "ammo";
+    let sprite = "images/ammoBox.png"
     if (chance < 5) return;
-    if (chance < 8) type = "health";
-    let drop = new Pickup(e.x, e.y, type);
+    if (chance < 8) {
+        type = "health";
+        sprite = "images/healthBox.png";
+    }
+    let drop = new Pickup(sprite, e.x, e.y, type);
     gameScene.addChild(drop);
     pickups.push(drop);
 }
@@ -573,7 +655,33 @@ function grabPickup(drop) {
         increaseLife();
     } else if (drop.type == "ammo") {
         heldAmmo += 30;
-        ammoLabel.text = `Ammo: ${ammo} / ${clipSize} | ${heldAmmo}`;
+        if (reloading) {
+            ammoLabel.text = `Ammo: RELOADING... | ${heldAmmo}`;
+        }
+        else {
+            ammoLabel.text = `Ammo: ${ammo} / ${clipSize} | ${heldAmmo}`;
+        }
     }
     entityDeath(drop);
+}
+
+// creates a platform at the given coordinates and appends it
+function createPlatform(x = 0, y = 0) {
+    let platform = new Platform(0xFFFFFF, x, y);
+    platforms.push(platform);
+    gameScene.addChild(platform);
+}
+
+// creates a walker at the given coordinates and appends it
+function createWalker(x = 0, y = 0) {
+    let walker = new Enemy("images/walker.png", "walker", x, y);
+    gameScene.addChild(walker);
+    enemies.push(walker);
+}
+
+// creates a drone at the given coordinates with a given min & max and appends it
+function createDrone(x = 0, y = 0, min = 0, max = 0, direction = 1) {
+    let drone = new Enemy("images/drone.png", "drone", x, y, min, max, direction);
+    gameScene.addChild(drone);
+    enemies.push(drone);
 }
