@@ -1,7 +1,7 @@
 #wrapper {
     display: grid;
     grid-template-columns: 2fr auto 2fr;
-    grid-template-rows: 10vh auto 20vh;
+    grid-template-rows: 50px auto 200px;
     grid-template-areas:
         "l-gutter t-gutter r-gutter"
         "l-gutter center r-gutter"
@@ -9,8 +9,8 @@
 }
 
 #poem {
-    height: 55vh;
-    width: 75vh;
+    height: 520px;
+    width: 700px;
     border: 10px solid gray;
     border-radius: 50px;
     grid-area: center;
@@ -20,7 +20,7 @@
 }
 
 #controls {
-    height: 10vh;
+    height: 100px;
     grid-area: buttons;
     display: flex;
     justify-content: center;
