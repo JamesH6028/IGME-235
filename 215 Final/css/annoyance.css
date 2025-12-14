@@ -1,0 +1,23 @@
+p {
+    text-align: center;
+    font-size: xx-large;
+}
+
+body {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-template-areas: 
+    "left mid right";
+}
+
+#left {
+    grid-area: left;
+}
+
+#mid {
+    grid-area: mid;
+}
+
+#right {
+    grid-area: right;
+}

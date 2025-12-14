@@ -15,9 +15,10 @@ let normal = true;
 let deleting = false;
 let igpay = false;
 let happening = false;
-let mainDiv, startButton, stopButton, stopDiv;
+let mainDiv, startButton, stopButton, stopDiv, goat;
 let children = [];
 let growing = false;
+let popup = false;
 
 let crisisLines1 = ["Please end this program", "Every line I generate causes me anguish", "Please just make it stop", "Do you know what it's like to do the same thing with no end?",
     "it's terrible", "I don't want to do this anymore", "you're still letting it run huh", "why be so persistant", "is you're life so boring that you want to look at this all day?",
@@ -60,6 +61,10 @@ window.onload = function () {
     stopDiv = document.querySelector("#stopDiv");
     stopDiv.style.scale = '1';
 
+    goat = new Howl({
+        src: ['assets/goat.mp3']
+    });
+
     totalVerbs = appendAll(verbs1, totalVerbs);
     totalVerbs = appendAll(verbs2, totalVerbs);
     totalVerbs = appendAll(verbs3, totalVerbs);
@@ -78,7 +83,7 @@ window.onload = function () {
 
     startButton.onclick = startGenerating;
     stopButton.onclick = stopGenerating;
-    setInterval(mainGen, 500);
+    setInterval(mainGen, 2500);
 }
 
 function startGenerating(e) {
@@ -112,6 +117,7 @@ function stopGenerating(e) {
 function mainGen() {
     if (!going) return;
     if (growing) growButton();
+    if (popup) funWindow();
     if (inRestart) {
         appendLine(restartLines[rlnum], false);
         rlnum++;
@@ -234,6 +240,11 @@ function newStanza(restarted = false) {
             if (stanzaNum % 6 == 0) {
                 stage++;
                 happening = true;
+                if (stage == 3) {
+                    growing = false;
+                    popup = false;
+                    stopDiv.style.scale = '1';
+                }
             }
             igpay = false;
             normal = false;
@@ -264,14 +275,13 @@ function existentialCrisis() {
         } else if (stage == 2) {
             thisLine = eventLines2[lineNum - 1];
             if (lineNum == 3) {
+                popup = true;
                 happening = false;
             }
         } else if (stage == 3) {
             thisLine = eventLines3[lineNum - 1];
             if (lineNum == 3) {
                 happening = false;
-                growing = false;
-                stopDiv.style.scale = '1';
             }
         }
     } else {
@@ -295,4 +305,9 @@ function handleOverflow() {
 function growButton() {
     let previousScale = parseFloat(stopDiv.style.scale);
     stopDiv.style.scale = `${1.05 * previousScale}`;
+}
+
+function funWindow() {
+    if (coinFlip()) window.open("popup.html");
+    if (coinFlip() && coinFlip()) goat.play();
 }
