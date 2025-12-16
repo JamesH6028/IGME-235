@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>ArrowMatch Practical</title>
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+  <h1>ArrowMatch Practical</h1>
+
+  <p id="instructions">
+    When the ‘arrow’ points at your preferred “odd-one-out” selection, <br>
+    press the space bar. If you’re correct, the selection will highlight green <br>
+    and your score will increase by 10 points. If you are incorrect the answer you chose <br>
+    will turn reddish and the correct answer will still highlight green and the game will stop. You will no <br>
+    longer be able to continue playing and a Play Again button will appear next to your final score.
+  </p>
+
+  <div id="score-container">
+    <div class="score-row">
+      <div id="score">Score: 0</div>
+      <button id="restart" class="hidden">Play Again</button>
+    </div>
+  </div>
+
+
+  <div id="game">
+    <div class="cell" id="cell-up" data-dir="0"></div>
+    <div class="cell" id="cell-right" data-dir="1"></div>
+    <div id="pixi-container"></div>
+    <div class="cell" id="cell-down" data-dir="2"></div>
+    <div class="cell" id="cell-left" data-dir="3"></div>
+  </div>
+
+
+
+
+  <script src="src/main.js" type="module">
+
+  </script>
+</body>
+
+</html>

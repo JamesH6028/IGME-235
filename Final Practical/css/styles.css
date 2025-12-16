@@ -1,0 +1,80 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+    padding: 1rem;
+}
+
+#game {
+    display: grid;
+    grid-template-columns: 100px 100px 100px;
+    grid-template-rows: 100px 100px 100px;
+    gap: 5px;
+    justify-content: center;
+    grid-template-areas:
+        ".     up     ."
+        "left  center right"
+        ".     down   .";
+}
+
+#cell-up {
+    grid-area: up;
+}
+
+#cell-right {
+    grid-area: right;
+}
+
+#cell-down {
+    grid-area: down;
+}
+
+#cell-left {
+    grid-area: left;
+}
+
+#pixi-container {
+    grid-area: center;
+}
+
+
+
+
+.cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(67, 67, 67);
+    background-color: rgb(176, 167, 167);
+    font-weight: bold;
+}
+
+.correct {
+    background-color: lightgreen;
+}
+
+.wrong {
+    background-color: lightcoral;
+}
+
+#pixi-container {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100px;
+    height: 100px;
+}
+
+#score-container {
+    text-align: center;
+    height: 3rem;
+    margin: 1rem 0;
+}
+
+.score-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hidden {
+    display: none;
+}
